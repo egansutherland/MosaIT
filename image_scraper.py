@@ -21,7 +21,7 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 			continue
 		realWidth, realHeight = im.size
 		if(realWidth < width or realHeight < height):
-			print("not big enough, removing")
+			#print("not big enough, removing")
 			os.remove(imgDir + file)
 			continue
 		widthScale = realWidth/width
@@ -30,12 +30,15 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 		if (scale > 1):
 			realWidth = math.floor(realWidth/scale)
 			realHeight = math.floor(realHeight/scale)
-			print("resizing to ",realWidth,realHeight)
+			#print("resizing to ",realWidth,realHeight)
 			im = im.resize((realWidth,realHeight), resample=Image.NEAREST)
 		left = (realWidth - width)/2
 		right = width + (realWidth - width)/2
 		top = (realHeight - height)/2
 		bottom = height + (realHeight - height)/2
 		im1 = im.crop((left,top,right,bottom))
-		im1.save(imgDir + file, format="png")
-		print(im1.size)
+		try:
+			im1.save(imgDir + file, format="png")
+		except:
+			os.remove(imgDir + file)
+		#print(im1.size)

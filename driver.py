@@ -30,4 +30,4 @@ if len(sys.argv) > 6:
 	Y = int(sys.argv[6])
 
 image_scraper.search(keyword,limit, width, height, searchSize)
-image_builder.BuildImage(X,Y, "Output/"+keyword+"/", outputDirectory="Mosaic/")
+image_builder.BuildImage(X,Y, "Output/"+keyword+"/", outputDirectory="Mosaic/" + keyword + "/")
