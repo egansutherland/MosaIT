@@ -14,7 +14,11 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 	#cwd = os.getcwd()
 	imgDir = "Output/" + keyword + "/"
 	for file in os.listdir(imgDir):
-		im = Image.open(imgDir + file)
+		try:
+			im = Image.open(imgDir + file)
+		except:
+			os.remove(imgDir + file)
+			continue
 		realWidth, realHeight = im.size
 		if(realWidth < width or realHeight < height):
 			print("not big enough, removing")
