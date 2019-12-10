@@ -9,6 +9,11 @@ from PIL import Image
 #
 #In current form it does not use opencv for image manipulation due to
 #installation problems. Will be fixed
+# X: number of images per row
+# Y: number of images per column
+# inputDirectory: directory containing input images
+# outputDirectory: directory to output images to
+# outputName: desired name of output image
 def BuildImage(X, Y, inputDirectory, outputDirectory='Output/', outputName='image.png'):
 	images = []
 
