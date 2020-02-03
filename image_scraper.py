@@ -7,7 +7,7 @@ import math
 def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 
 	response = gid.googleimagesdownload()
-	arguments = {"keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":"Output"}
+	arguments = {"chromedriver":"/home/egan/MosaIT/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":"Output"}
 	paths = response.download(arguments)
 	print(paths)
 
