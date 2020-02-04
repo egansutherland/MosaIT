@@ -14,15 +14,15 @@ from PIL import Image
 # inputDirectory: directory containing input images
 # outputDirectory: directory to output images to
 # outputName: desired name of output image
-def BuildImage(X, Y, inputDirectory, outputDirectory='Output/', outputName='image.png'):
+def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.png'):
 	images = []
 
-	for index in os.listdir(inputDirectory):
-		#temp = np.array(plt.imread(inputDirectory + index)).astype(np.float)
-		images.append(Image.open(inputDirectory + index))
+	# for index in os.listdir(inputDirectory):
+	# 	#temp = np.array(plt.imread(inputDirectory + index)).astype(np.float)
+	# 	images.append(Image.open(inputDirectory + index))
 
-	numIms = len(images)
-	width, height = images[0].size
+	numIms = len(inputImages)
+	width, height = inputImages[0].size
 	
 	if (X * Y) > numIms:
 		print('Error: not enough images')
@@ -39,7 +39,7 @@ def BuildImage(X, Y, inputDirectory, outputDirectory='Output/', outputName='imag
 
 	for i in range(0, Y):
 		for j in range(0,X):
-			outputImage.paste(images[count],(x_offset,y_offset))
+			outputImage.paste(inputImages[count].image,(x_offset,y_offset))
 			x_offset += width
 			count += 1
 		x_offset = 0
