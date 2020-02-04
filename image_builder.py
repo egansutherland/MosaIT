@@ -22,31 +22,40 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	# 	images.append(Image.open(inputDirectory + index))
 
 	numIms = len(inputImages)
-	height = inputImages[0].image.shape[0]
-	width = inputImages[0].image.shape[1]
+	# height = inputImages[0].image.shape[0]
+	# width = inputImages[0].image.shape[1]
 	
 	if (X * Y) > numIms:
 		print('Error: not enough images')
 		return
 
-	total_width = width * X
-	total_height = height * Y
+	#total_width = width * X
+	#total_height = height * Y
 
 	#outputImage = Image.new('RGB',(total_width,total_height))
 
-	x_offset = 0
-	y_offset = 0
-	count = 0
+	# x_offset = 0
+	# y_offset = 0
+	# count = 0
 
-	for i in range(0, Y):
-		for j in range(0,X):
-			outputImage.paste(inputImages[count].image,(x_offset,y_offset))
-			x_offset += width
-			count += 1
-		x_offset = 0
-		y_offset += height
-		
+	# for i in range(0, Y):
+	# 	for j in range(0,X):
+	# 		outputImage.paste(inputImages[count].image,(x_offset,y_offset))
+	# 		x_offset += width
+	# 		count += 1
+	# 	x_offset = 0
+	# 	y_offset += height
+	outputImage = None
+	counter = 0
+	row = []
+	for j in range(0,Y):
+		for i in range(0,X):
+			row[i] = cv.hconcat((row[i], inputImages[counter].Image))
+			counter+=1
+	outputImage = cv.vconcat(row)
+	del row
+
 	if not os.path.exists(outputDirectory):
 		os.makedirs(outputDirectory)
 
-	outputImage.save(outputDirectory + outputName)
+	cv.imwrite(outputDirectory + outputName + ".png", outputImage)
