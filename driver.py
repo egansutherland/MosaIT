@@ -36,18 +36,21 @@ if len(sys.argv) > 6:
 	x = int(sys.argv[5])
 	y = int(sys.argv[6])
 
-justInCase = 0
+
 
 targetImagePath = os.listdir("Input/")[0]
 #image_analyzer.gridify(X,Y,targetImagePath)
 
 targetImage = TargetImage.TargetImage("Input/"+targetImagePath, x, y)
+height = targetImage.grid[0].shape[0]
+width = targetImage.grid[0].shape[1]
+downloadTries = 0
 
 image_scraper.search(keyword,limit, width, height, searchSize)
-while (len(os.listdir("Output/"+keyword+"/")) <= 0) and (justInCase < 100):
-	print("false start, attempt number: " + str(justInCase))
+while (len(os.listdir("Output/"+keyword+"/")) <= 0) and (downloadTries < 100):
+	print("false start, attempt number: " + str(downloadTries))
 	image_scraper.search(keyword,limit, width, height, searchSize)
-	justInCase += 1
+	downloadTries += 1
 
 downloadImages = []
 for download in os.listdir("Output/"+keyword+"/"):
@@ -55,6 +58,9 @@ for download in os.listdir("Output/"+keyword+"/"):
 	downloadImages.append(downloadImage)
 
 orderedImages = image_ordering.OrderImages(targetImage,downloadImages)
+
+for n,ordImg in enumerate(orderedImages):
+	cv.imwrite("Ordered/"+str(n)+".png",ordImg.image)
 
 image_builder.BuildImage(x,y, orderedImages, outputDirectory="Mosaic/" + keyword + "/")
 

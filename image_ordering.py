@@ -14,7 +14,7 @@ def OrderImages(target, inputImages):
 	for i in target.grid:
 		for j in inputImages:
 			colorSim = i.colorSimilarity(j)
-			if colorSim > 0.01:
+			if colorSim > 0.1:
 				outputImages.append(j)
 				del j
 				break
