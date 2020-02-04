@@ -1,7 +1,8 @@
 import numpy as np
 import os
 import sys
-from PIL import Image
+import cv2 as cv
+
 
 #combines images in an ordered set into a single image. Goes through
 #input directory, placing images from left to right, top to bottom into
@@ -47,10 +48,13 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	# 	y_offset += height
 	outputImage = None
 	counter = 0
-	row = []
+	row = [None]*Y
 	for j in range(0,Y):
 		for i in range(0,X):
-			row[i] = cv.hconcat((row[i], inputImages[counter].Image))
+			if i == 0:
+				row[i] = inputImages[counter].image
+			else:
+				row[i] = cv.hconcat((row[i], inputImages[counter].image))
 			counter+=1
 	outputImage = cv.vconcat(row)
 	del row

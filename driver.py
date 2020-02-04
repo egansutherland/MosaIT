@@ -42,8 +42,8 @@ targetImagePath = os.listdir("Input/")[0]
 #image_analyzer.gridify(X,Y,targetImagePath)
 
 targetImage = TargetImage.TargetImage("Input/"+targetImagePath, x, y)
-height = targetImage.grid[0].shape[0]
-width = targetImage.grid[0].shape[1]
+height = targetImage.grid[0].image.shape[0]
+width = targetImage.grid[0].image.shape[1]
 downloadTries = 0
 
 image_scraper.search(keyword,limit, width, height, searchSize)
