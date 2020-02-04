@@ -60,7 +60,7 @@ for download in os.listdir("Output/"+keyword+"/"):
 orderedImages = image_ordering.OrderImages(targetImage,downloadImages)
 
 for n,ordImg in enumerate(orderedImages):
-	cv.imwrite("Ordered/"+str(n)+".png",ordImg.image)
+	cv.imwrite("Ordered/"+keyword+"/"+str(n)+".png",ordImg.image)
 
 image_builder.BuildImage(x,y, orderedImages, outputDirectory="Mosaic/" + keyword + "/")
 

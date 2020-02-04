@@ -5,7 +5,6 @@ class Image: # If split is needed, uncomment cv.split line
 	def __init__(self, filepath, source):
 		self.filepath = filepath # filepath to image
 		self.image = cv.imread(filepath, cv.IMREAD_COLOR) # opened image
-		print(self.image)
 		self.source = source # source on web of image
 		self.split = cv.split(self.image)
 		self.r_hist = cv.calcHist(self.image, [2], None, [256], (0,256)) # histogram of red channel

@@ -48,18 +48,22 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	# 	y_offset += height
 	outputImage = None
 	counter = 0
-	row = [None]*Y
+	col = []
 	for j in range(0,Y):
+		row = []
 		for i in range(0,X):
-			row[j].append(inputImages[counter].image)
+			row.append(inputImages[counter].image)
 			# if i == 0:
 			# 	row[i] = inputImages[counter].image
 			# else:
 			# 	row[i] = cv.hconcat((row[i], inputImages[counter].image))
 			counter+=1
-		cv.hconcat(row[j])
-	outputImage = cv.vconcat(row)
-	del row
+		col.append(cv.hconcat(row))
+
+		#print(type(col[0]))
+	cv.imwrite(outputDirectory + outputName + ".png", col[0])
+	outputImage = cv.vconcat(col)
+	#outputImage = np.vstack(col)
 
 	if not os.path.exists(outputDirectory):
 		os.makedirs(outputDirectory)

@@ -12,9 +12,9 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 	paths = response.download(arguments)
 	#print(paths)
 
-	for path in paths:
-		print("THIS IS A PATH\n")
-		print(path)
+	# for path in paths:
+	# 	print("THIS IS A PATH\n")
+	# 	print(path)
 
 	imgDir = "Output/" + keyword + "/"
 	for file in os.listdir(imgDir):
@@ -40,10 +40,16 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 			im = im.resize((realWidth,realHeight), resample=Image.NEAREST)
 
 		#Crop images
+		extraWidthPixel = 0
+		if (width % 2 != 0):
+			extraWidthPixel = 1
+		extraHeightPixel = 0
+		if (height % 2 != 0):
+			extraHeightPixel = 1
 		left = (realWidth - width)/2
-		right = width + (realWidth - width)/2
+		right = width + (realWidth - width)/2 - extraWidthPixel
 		top = (realHeight - height)/2
-		bottom = height + (realHeight - height)/2
+		bottom = height + (realHeight - height)/2 - extraHeightPixel
 		im1 = im.crop((left,top,right,bottom))
 
 		#if it can't be saved as a png file, remove it
