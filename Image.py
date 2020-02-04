@@ -2,14 +2,15 @@ import cv2 as cv
 import numpy
 
 class Image: # If split is needed, uncomment cv.split line
-	def __init__(self, filepath, source)
+	def __init__(self, filepath, source):
 		self.filepath = filepath # filepath to image
 		self.image = cv.imread(filepath, cv.IMREAD_COLOR) # opened image
+		print(self.image)
 		self.source = source # source on web of image
-		#self.split = cv.split(image)
-		self.r_hist = cv.calcHist(self.image, [2], None, 256, [0,256]) # histogram of red channel
-		self.g_hist = cv.calcHist(self.image, [1], None, 256, [0,256]) # histogram of green channel
-		self.b_hist = cv.calcHist(self.image, [0], None, 256, [0,256]) # histogram of blue channel
+		self.split = cv.split(self.image)
+		self.r_hist = cv.calcHist(self.image, [2], None, [256], (0,256)) # histogram of red channel
+		self.g_hist = cv.calcHist(self.image, [1], None, [256], (0,256)) # histogram of green channel
+		self.b_hist = cv.calcHist(self.split, [0], None, [256], (0,256)) # histogram of blue channel
 
 	# Compares other histograms to self histograms
 	# and returns a value between 0 and 1 representing a
