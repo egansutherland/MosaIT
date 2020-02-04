@@ -22,7 +22,8 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	# 	images.append(Image.open(inputDirectory + index))
 
 	numIms = len(inputImages)
-	width, height = inputImages[0].size
+	height = inputImages[0].image.shape[0]
+	width = inputImages[0].image.shape[1]
 	
 	if (X * Y) > numIms:
 		print('Error: not enough images')
@@ -31,7 +32,7 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	total_width = width * X
 	total_height = height * Y
 
-	outputImage = Image.new('RGB',(total_width,total_height))
+	#outputImage = Image.new('RGB',(total_width,total_height))
 
 	x_offset = 0
 	y_offset = 0

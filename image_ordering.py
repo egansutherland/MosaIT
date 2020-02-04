@@ -13,10 +13,10 @@ def OrderImages(target, inputImages):
 	outputImages = []
 	for i in target.grid:
 		for j in inputImages:
-			colorSim = target.grid[i].colorSimilarity(inputImages[j])
-			if colorSim > 0.7:
-				outputImages += inputImages[j]
-				del inputImages[j]
+			colorSim = i.colorSimilarity(j)
+			if colorSim > 0.01:
+				outputImages.append(j)
+				del j
 				break
 
 	return outputImages

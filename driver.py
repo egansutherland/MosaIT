@@ -56,7 +56,7 @@ for download in os.listdir("Output/"+keyword+"/"):
 
 orderedImages = image_ordering.OrderImages(targetImage,downloadImages)
 
-image_builder.BuildImage(x,y, "Output/"+keyword+"/", outputDirectory="Mosaic/" + keyword + "/")
+image_builder.BuildImage(x,y, orderedImages, outputDirectory="Mosaic/" + keyword + "/")
 
 # im = Image.open("Mosaic/" + keyword + "/image.png")
 # im.show()
