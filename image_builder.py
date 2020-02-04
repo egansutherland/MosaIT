@@ -15,7 +15,7 @@ import cv2 as cv
 # inputDirectory: directory containing input images
 # outputDirectory: directory to output images to
 # outputName: desired name of output image
-def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.png'):
+def BuildImage(X, Y, inputImages, colorSim, outputDirectory='Output/', outputName='image'):
 	images = []
 
 	# for index in os.listdir(inputDirectory):
@@ -27,7 +27,7 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	# width = inputImages[0].image.shape[1]
 	
 	if (X * Y) > numIms:
-		print('Error: not enough images')
+		print('Error: not enough images, needed ' + str(X*Y) + " but got " + numIns)
 		return
 
 	#total_width = width * X
@@ -61,11 +61,11 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 		col.append(cv.hconcat(row))
 
 		#print(type(col[0]))
-	cv.imwrite(outputDirectory + outputName + ".png", col[0])
+	#cv.imwrite(outputDirectory + outputName + ".png", col[0])
 	outputImage = cv.vconcat(col)
 	#outputImage = np.vstack(col)
 
 	if not os.path.exists(outputDirectory):
 		os.makedirs(outputDirectory)
 
-	cv.imwrite(outputDirectory + outputName + ".png", outputImage)
+	cv.imwrite(outputDirectory + outputName + str(colorSim) + ".png", outputImage)

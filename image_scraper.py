@@ -54,7 +54,6 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 
 		#if it can't be saved as a png file, remove it
 		try:
-			print(file+"\n")
 			im1.save(imgDir + file, format="png")
 		except:
 			os.remove(imgDir + file)

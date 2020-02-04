@@ -36,6 +36,9 @@ if len(sys.argv) > 6:
 	x = int(sys.argv[5])
 	y = int(sys.argv[6])
 
+colorSim = 0
+if len(sys.argv) > 7:
+	colorSim = float(sys.argv[7])
 
 
 targetImagePath = os.listdir("Input/")[0]
@@ -57,12 +60,12 @@ for download in os.listdir("Output/"+keyword+"/"):
 	downloadImage = Image.Image("Output/"+keyword+"/"+download, None)
 	downloadImages.append(downloadImage)
 
-orderedImages = image_ordering.OrderImages(targetImage,downloadImages)
+orderedImages = image_ordering.OrderImages(targetImage,downloadImages, colorSim)
 
 for n,ordImg in enumerate(orderedImages):
 	cv.imwrite("Ordered/"+keyword+"/"+str(n)+".png",ordImg.image)
 
-image_builder.BuildImage(x,y, orderedImages, outputDirectory="Mosaic/" + keyword + "/")
+image_builder.BuildImage(x,y, orderedImages, colorSim, outputDirectory="Mosaic/" + keyword + "/")
 
 # im = Image.open("Mosaic/" + keyword + "/image.png")
 # im.show()
