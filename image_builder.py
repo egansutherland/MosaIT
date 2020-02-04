@@ -51,11 +51,13 @@ def BuildImage(X, Y, inputImages, outputDirectory='Output/', outputName='image.p
 	row = [None]*Y
 	for j in range(0,Y):
 		for i in range(0,X):
-			if i == 0:
-				row[i] = inputImages[counter].image
-			else:
-				row[i] = cv.hconcat((row[i], inputImages[counter].image))
+			row[j].append(inputImages[counter].image)
+			# if i == 0:
+			# 	row[i] = inputImages[counter].image
+			# else:
+			# 	row[i] = cv.hconcat((row[i], inputImages[counter].image))
 			counter+=1
+		cv.hconcat(row[j])
 	outputImage = cv.vconcat(row)
 	del row
 
