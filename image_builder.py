@@ -25,7 +25,7 @@ def BuildImage(X, Y, inputDirectory, outputDirectory='Output/', outputName='imag
 	width, height = images[0].size
 	
 	if (X * Y) > numIms:
-		print('error')
+		print('Error: not enough images')
 		return
 
 	total_width = width * X
