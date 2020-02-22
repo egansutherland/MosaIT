@@ -15,7 +15,7 @@ import cv2 as cv
 # inputDirectory: directory containing input images
 # outputDirectory: directory to output images to
 # outputName: desired name of output image
-def BuildImage(X, Y, inputImages, colorSim, outputDirectory='Output/', outputName='image'):
+def BuildImage(x, y, inputImages, colorSim, outputDirectory='Output/', outputName='image'):
 	images = []
 
 	# for index in os.listdir(inputDirectory):
@@ -26,8 +26,8 @@ def BuildImage(X, Y, inputImages, colorSim, outputDirectory='Output/', outputNam
 	# height = inputImages[0].image.shape[0]
 	# width = inputImages[0].image.shape[1]
 	
-	if (X * Y) > numIms:
-		print('Error: not enough images, needed ' + str(X*Y) + " but got " + numIns)
+	if (x * y) > numIms:
+		print('Error: not enough images, needed ' + str(x*y) + " but got " + str(numIms))
 		return
 
 	#total_width = width * X
@@ -49,9 +49,9 @@ def BuildImage(X, Y, inputImages, colorSim, outputDirectory='Output/', outputNam
 	outputImage = None
 	counter = 0
 	col = []
-	for j in range(0,Y):
+	for j in range(0,y):
 		row = []
-		for i in range(0,X):
+		for i in range(0,x):
 			row.append(inputImages[counter].image)
 			# if i == 0:
 			# 	row[i] = inputImages[counter].image
@@ -68,4 +68,6 @@ def BuildImage(X, Y, inputImages, colorSim, outputDirectory='Output/', outputNam
 	if not os.path.exists(outputDirectory):
 		os.makedirs(outputDirectory)
 
-	cv.imwrite(outputDirectory + outputName + str(colorSim) + ".png", outputImage)
+	mosaicName = outputDirectory + outputName + str(x) + "_" + str(y) + "_" + str(colorSim) + ".png"
+	cv.imwrite(outputDirectory + outputName + str(x) + "_" + str(y) + "_" + str(colorSim) + ".png", outputImage)
+	print("Success,",mosaicName,"created!")

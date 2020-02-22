@@ -4,11 +4,11 @@ import os
 import math
 
 #assumes not bigger than 640*480
-def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
+def search(keyword, limit=100, searchSize=">400*300"):
 
 	response = gid.googleimagesdownload()
 	cwd = os.getcwd()
-	arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":"Output"}
+	arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":"Downloads"}
 	paths = response.download(arguments)
 	#print(paths)
 
@@ -16,18 +16,27 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 	# 	print("THIS IS A PATH\n")
 	# 	print(path)
 
-	imgDir = "Output/" + keyword + "/"
-	for file in os.listdir(imgDir):
+def crop(keyword, width, height):
+	inDir = "Downloads/" + keyword + "/"
+	outDir = "Cropped/" + keyword + "/"
+	try:
+		os.mkdir(outDir)
+	except:
+		print(outDir,"exists... removing files")
+		for f in os.listdir(outDir):
+			os.remove(outDir + f)
+	for file in os.listdir(inDir):
 		try:
-			im = Image.open(imgDir + file)
+			im = Image.open(inDir + file)
 		except:
-			os.remove(imgDir + file)
+			#remove files that can't be opened
+			os.remove(inDir + file)
 			continue
 
-		#remove images that are too small
+		#skip images that are too small
 		realWidth, realHeight = im.size
 		if(realWidth < width or realHeight < height):
-			os.remove(imgDir + file)
+			#os.remove(inDir + file)
 			continue
 
 		#Scaling down images
@@ -54,6 +63,7 @@ def search(keyword, limit=100, width=100, height=100, searchSize=">400*300"):
 
 		#if it can't be saved as a png file, remove it
 		try:
-			im1.save(imgDir + file, format="png")
+			im1.save(outDir + file, format="png")
 		except:
-			os.remove(imgDir + file)
+			print("couldnt save")
+			#os.remove(inDir + file)

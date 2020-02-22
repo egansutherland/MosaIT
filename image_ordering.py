@@ -17,7 +17,7 @@ def OrderImages(target, inputImages, colorSimIn):
 			colorSim = i.colorSimilarity(j)
 			if colorSim > colorSimIn:
 				outputImages.append(j)
-				cv.imwrite("Ordered/"+str(count)+".png",j.image)
+				#cv.imwrite("Ordered/"+str(count)+".png",j.image)
 				inputImages.remove(j)
 				count+=1
 				break
