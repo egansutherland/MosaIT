@@ -2,6 +2,7 @@ import image_scraper
 import image_builder
 import image_analyzer
 import image_ordering
+import get_related
 import TargetImage
 import Image
 
@@ -47,15 +48,30 @@ targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
 height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
 print(width,height)
+
+#obtain list of related terms
+keywords = []
+keywordsTemp = []
+keywords.append(keyword)
+keywordsTemp = get_related.getTerms(keyword)
+for i in keywordsTemp:
+	keywords.append(keywordsTemp[i])
 #obtain images and put in Downloads/keyword directory
 if not skip:
 	downloadTries = 0
+	currKeyword = 0
+	currDirSize
+	lastDirSize = 0
 	searchSize = ">400*300" #probably remove this
-	image_scraper.search(keyword, limit, searchSize)
-	while (len(os.listdir("Downloads/"+keyword+"/")) <= 0) and (downloadTries < 100):
+	#image_scraper.search(keyword, limit, searchSize)
+	while (len(os.listdir("Downloads/"+keyword+"/")) < limit) and (downloadTries < 300) and (currKeyword < len(keywords)):
 		print("false start, attempt number: " + str(downloadTries))
-		image_scraper.search(keyword, limit, searchSize)
+		image_scraper.search(keywords[currKeyword], limit, searchSize)
 		downloadTries += 1
+		currDirSize = (len(os.listdir("Downloads/"+keyword+"/")))
+		if currDirSize > lastDirSize:
+			lastDirSize = currDirSize
+			currKeyword += 1
 
 #crop downloaded images and put into Cropped/keyword directory
 image_scraper.crop(keyword, width, height)
