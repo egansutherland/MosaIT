@@ -10,6 +10,7 @@ import argparse
 import sys
 import os
 import math
+import subprocess
 import cv2 as cv
 # from PIL import Image
 
@@ -54,24 +55,70 @@ keywords = []
 keywordsTemp = []
 keywords.append(keyword)
 keywordsTemp = get_related.getTerms(keyword)
-for i in keywordsTemp:
+for i in range(0, len(keywordsTemp)):
 	keywords.append(keywordsTemp[i])
+
+cwd = os.getcwd()
 #obtain images and put in Downloads/keyword directory
+# if not skip:
+# 	downloadDirectory = "/Downloads/"+keyword
+# 	downloadTries = 0
+# 	currKeyword = 0
+# 	currDirSize = 0
+# 	if os.path.exists(cwd+downloadDirectory):
+# 		currDirSize = (len(os.listdir(cwd+downloadDirectory)))
+# 	lastDirSize = 0
+# 	remaining = limit - currDirSize
+# 	searchSize = ">400*300" #probably remove this
+# 	if not image_scraper.search(keywords[0], limit, searchSize):
+# 		print("false start, attempt number: " + str(downloadTries))
+# 		downloadTries += 1
+# 	while (len(os.listdir(cwd+downloadDirectory)) < limit) and (downloadTries < (limit/2)) and (currKeyword < len(keywords)):
+# 		didWork = image_scraper.search(keywords[currKeyword], remaining, searchSize)
+# 		if not didWork:
+# 			print("false start, attempt number: " + str(downloadTries))
+# 			downloadTries += 1
+# 		if currKeyword > 0:
+# 			os.system("mv "+cwd+"Downloads/"+keywords[currKeyword]+"/* "+downloadDirectory)
+# 		currDirSize = (len(os.listdir(cwd+downloadDirectory)))
+# 		if not didWork:
+# 			lastDirSize = currDirSize
+# 			remaining -= currDirSize
+# 			downloadTries = 0
+# 			currKeyword += 1
+# Original Download code
+if not skip:
+	downloadTries = 0
+	searchSize = ">400*300" #probably remove this
+	image_scraper.search(keyword, limit, searchSize)
+	while (len(os.listdir("Downloads/"+keyword+"/")) <= 0) and (downloadTries < 100):
+		print("false start, attempt number: " + str(downloadTries))
+		image_scraper.search(keyword, limit, searchSize)
+		downloadTries += 1
+
 if not skip:
 	downloadTries = 0
 	currKeyword = 0
-	currDirSize
-	lastDirSize = 0
-	searchSize = ">400*300" #probably remove this
-	#image_scraper.search(keyword, limit, searchSize)
-	while (len(os.listdir("Downloads/"+keyword+"/")) < limit) and (downloadTries < 300) and (currKeyword < len(keywords)):
-		print("false start, attempt number: " + str(downloadTries))
-		image_scraper.search(keywords[currKeyword], limit, searchSize)
-		downloadTries += 1
-		currDirSize = (len(os.listdir("Downloads/"+keyword+"/")))
-		if currDirSize > lastDirSize:
-			lastDirSize = currDirSize
+	sameDownloadCounter = 0
+	searchSize = ">400*300"
+	if not image_scraper.search(keywords[currKeyword], limit, searchSize):
+		currKeyword += 1
+	while(len(os.listdir("Downloads/"+keywords[0])) <= limit) and (downloadTries < 200) and (currKeyword < len(keywords)):
+		if not image_scraper.search(keywords[currKeyword], limit, searchSize):
+			downloadTries += 1
+			sameDownloadCounter += 1
+			if sameDownloadCounter > 10:
+				currKeyword += 1
+				sameDownloadCounter = 0
+		else:
 			currKeyword += 1
+			sameDownloadCounter = 0
+# consolidate related downloads to keyword directory
+for i in range(1, currKeyword):
+	subprocess.run(['mv', "Downloads/"+keywords[i]+"/*", "Downloads/"+keyword])
+# remove extra directories from downloads
+for i in range(1, currKeyword):
+	subprocess.run(['rm', '-r', "Downloads/"+keywords[i]])
 
 #crop downloaded images and put into Cropped/keyword directory
 image_scraper.crop(keyword, width, height)

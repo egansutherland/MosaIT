@@ -2,7 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import re
-import xml.etree.ElementTree as ET
 import time
 #from selenium.webdriver.common.exceptions import NoSuchElementException
 
