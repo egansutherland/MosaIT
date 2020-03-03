@@ -113,12 +113,12 @@ if not skip:
 		else:
 			currKeyword += 1
 			sameDownloadCounter = 0
-# consolidate related downloads to keyword directory
-for i in range(1, currKeyword):
-	subprocess.run(['mv', "Downloads/"+keywords[i]+"/*", "Downloads/"+keyword])
-# remove extra directories from downloads
-for i in range(1, currKeyword):
-	subprocess.run(['rm', '-r', "Downloads/"+keywords[i]])
+	# consolidate related downloads to keyword directory
+	for i in range(1, currKeyword):
+		subprocess.run(['mv', "Downloads/"+keywords[i]+"/", "Downloads/"+keyword])
+	# remove extra directories from downloads
+	for i in range(1, currKeyword):
+		subprocess.run(['rm', '-r', "Downloads/"+keywords[i]])
 
 #crop downloaded images and put into Cropped/keyword directory
 image_scraper.crop(keyword, width, height)
