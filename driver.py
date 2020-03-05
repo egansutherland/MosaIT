@@ -10,7 +10,8 @@ import sys
 import os
 import math
 import cv2 as cv
-# from PIL import Image
+
+from PIL import Image as IMAGE
 
 parser = argparse.ArgumentParser(description='Calls MosaIT backend driver with parameters.')
 
@@ -21,9 +22,11 @@ parser.add_argument("y", help = "number of images per column", type = int)
 parser.add_argument("-s","--skip", help = "skips the image gathering", action = "store_true")
 parser.add_argument("-b","--best", help = "chooses best image, instead of first above threshold", action = "store_true")
 parser.add_argument("-r","--repeat", help = "allows repeat of images in mosaic", action = "store_true")
+parser.add_argument("-v","--view", help = "views the completed mosaic", action = "store_true")
 parser.add_argument("-d","--delete", help = "clears everything in Downloads, Cropped, Grid, Ordered, and Mosaic directories", action = "store_true")
 parser.add_argument("-c","--colorSim", help = "sets a color similarity threshold", type = float, default = 0)
 parser.add_argument("-i","--input", help = "filename of desired target image in Input directory", default = os.listdir("Input/")[0])
+
 
 #get all the args
 args = parser.parse_args()
@@ -32,12 +35,16 @@ keyword = keyword.replace("_"," ")
 limit = args.limit
 x = args.x
 y = args.y
+
 skip = args.skip
-best = args.best #TODO
-repeat = args.repeat #TODO
+best = args.best
+repeat = args.repeat
+view = args.view
+
 colorSim = args.colorSim
 targetImageFile = args.input
 targetImageFileName = targetImageFile.split(".")[0]
+
 
 if args.delete:
 	os.system("sh cleanOutput.sh")
@@ -67,7 +74,7 @@ for download in os.listdir("Cropped/"+keyword+"/"):
 	downloadImages.append(downloadImage)
 
 #order images accordingly
-orderedImages = image_ordering.OrderImages(targetImage,downloadImages, colorSim)
+orderedImages = image_ordering.OrderImages(targetImage,downloadImages, colorSim, best, repeat)
 
 #save ordered images to directory (for debugging)
 orderedDir = "Ordered/" + keyword + "/"
@@ -80,8 +87,20 @@ except:
 for n,ordImg in enumerate(orderedImages):
 	cv.imwrite(orderedDir+str(n)+".png",ordImg.image)
 
-#build mosaic out of ordered images
-image_builder.BuildImage(x,y, orderedImages, colorSim, outputDirectory="Mosaic/" + keyword + "/", outputName=targetImageFileName)
+#make the filename for the completed mosaic
+mosaicFileName = targetImageFileName + str(x) + "_" + str(y)
+if best:
+	mosaicFileName += "_b"
+else:
+	mosaicFileName += "_" + str(colorSim)
+if repeat:
+	mosaicFileName += "_r"
+mosaicFileName += ".png"
 
-# im = Image.open("Mosaic/" + keyword + "/image.png")
-# im.show()
+
+#build mosaic out of ordered images
+image_builder.BuildImage(x, y, orderedImages, outputDirectory="Mosaic/" + keyword + "/", outputName=mosaicFileName)
+
+if view:
+	im = IMAGE.open("Mosaic/"+keyword+"/"+mosaicFileName)
+	im.show()
