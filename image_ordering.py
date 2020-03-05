@@ -8,18 +8,26 @@ import TargetImage
 # it matches target image best.
 # target is of type TargetImage
 # inputImages is an array of type Image
-def OrderImages(target, inputImages, colorSimIn):
+def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
 
 	outputImages = []
-	count=0
 	for i in target.grid:
+		colorSimBest = 0
+		imBest = None
 		for j in inputImages:
 			colorSim = i.colorSimilarity(j)
-			if colorSim > colorSimIn:
-				outputImages.append(j)
-				#cv.imwrite("Ordered/"+str(count)+".png",j.image)
-				inputImages.remove(j)
-				count+=1
-				break
-
+			if not best:
+				if colorSim > colorSimIn:
+					outputImages.append(j)
+					if not repeat:
+						inputImages.remove(j)
+					break
+			else:
+				if colorSim > colorSimBest:
+					colorSimBest = colorSim
+					imBest = j
+		if best:
+			outputImages.append(imBest)
+			if not repeat:
+				inputImages.remove(imBest)
 	return outputImages
