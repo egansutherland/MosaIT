@@ -44,39 +44,53 @@ view = args.view
 colorSim = args.colorSim
 targetImageFile = args.input
 targetImageFileName = targetImageFile.split(".")[0]
-
+#
 
 if args.delete:
 	os.system("sh cleanOutput.sh")
 
-#open targetImage and find height and width
+#open targetImage and find height and width of grid images
 targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
 height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
-print(width,height)
+print("Grid image dimensions: ", width, height)
 #obtain images and put in Downloads/keyword directory
 if not skip:
 	downloadTries = 0
 	searchSize = ">400*300" #probably remove this
-	image_scraper.search(keyword, limit, searchSize)
-	while (len(os.listdir("Downloads/"+keyword+"/")) <= 0) and (downloadTries < 100):
+	downloadImages = image_scraper.search(keyword, limit, searchSize)
+	while len(downloadImages) <= 0 and downloadTries < 100: 			#changed
 		print("false start, attempt number: " + str(downloadTries))
-		image_scraper.search(keyword, limit, searchSize)
+		downloadImages = image_scraper.search(keyword, limit, searchSize) #changed
 		downloadTries += 1
 
+print("Number of download images turned into Image class:",str(len(downloadImages))) #DEBUG
+
+
 #crop downloaded images and put into Cropped/keyword directory
-image_scraper.crop(keyword, width, height)
 
+
+#TO REPLACE
+image_scraper.crop(keyword, width, height)								#XNAY
 #turn all downloaded images into Image class
-downloadImages = []
-for download in os.listdir("Cropped/"+keyword+"/"):
-	downloadImage = Image.Image("Cropped/"+keyword+"/"+download, None)
-	downloadImages.append(downloadImage)
+croppedImages = []
+for download in os.listdir("Cropped/"+keyword+"/"): 					#XNAY
+	croppedImage = Image.Image("Cropped/"+keyword+"/"+download, None)	#XNAY
+	croppedImages.append(croppedImage)									#XNAY
 
+#WHAT TO REPLACE WITH
+# for download in downloadImages:											#WANT
+# 	croppedIm = download.crop(width, height) 							#WANT
+# 	if croppedIm:														#WANT
+# 		print("")														#WANT
+# 		croppedImages.append(croppedIm) 								#WANT
+
+print("Len cropped images:", str(len(croppedImages)))
 #order images accordingly
-orderedImages = image_ordering.OrderImages(targetImage,downloadImages, colorSim, best, repeat)
 
-#save ordered images to directory (for debugging)
+orderedImages = image_ordering.OrderImages(targetImage, croppedImages, colorSim, best, repeat)
+
+#save ordered images to directory (for debugging)						#DEBUG
 orderedDir = "Ordered/" + keyword + "/"
 try:
 	os.mkdir(orderedDir)
@@ -87,7 +101,7 @@ except:
 for n,ordImg in enumerate(orderedImages):
 	cv.imwrite(orderedDir+str(n)+".png",ordImg.image)
 
-#make the filename for the completed mosaic
+#make the filename for the completed mosaic based on parameters
 mosaicFileName = targetImageFileName + str(x) + "_" + str(y)
 if best:
 	mosaicFileName += "_b"

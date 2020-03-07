@@ -1,9 +1,11 @@
 from google_images_download import google_images_download as gid
-from PIL import Image
+from PIL import Image as IMAGE
 import os
 import math
+import Image
 
 #assumes not bigger than 640*480
+#takes in keyword, limit of images downloaded, and search size minimum and returns a list of Image objects
 def search(keyword, limit=100, searchSize=">400*300"):
 
 	response = gid.googleimagesdownload()
@@ -15,7 +17,21 @@ def search(keyword, limit=100, searchSize=">400*300"):
 	# for path in paths:
 	# 	print("THIS IS A PATH\n")
 	# 	print(path)
+	downloadDir = "Downloads/" + keyword + "/"
+	downloadImages = []
+	for download in os.listdir(downloadDir):
+		source = None
+		try:
+			downloadImage = Image.Image(downloadDir + download, source)
+			if downloadImage is not None:
+				downloadImages.append(downloadImage)
+		except:
+			continue
 
+	return downloadImages
+
+
+#trying to remove
 def crop(keyword, width, height):
 	inDir = "Downloads/" + keyword + "/"
 	outDir = "Cropped/" + keyword + "/"
@@ -27,9 +43,10 @@ def crop(keyword, width, height):
 			os.remove(outDir + f)
 	for file in os.listdir(inDir):
 		try:
-			im = Image.open(inDir + file)
+			im = IMAGE.open(inDir + file)
 		except:
 			#remove files that can't be opened
+			print("REMOVING FILE")
 			os.remove(inDir + file)
 			continue
 
@@ -46,7 +63,7 @@ def crop(keyword, width, height):
 		if (scale > 1):
 			realWidth = math.floor(realWidth/scale)
 			realHeight = math.floor(realHeight/scale)
-			im = im.resize((realWidth,realHeight), resample=Image.NEAREST)
+			im = im.resize((realWidth,realHeight), resample=IMAGE.NEAREST)
 
 		#Crop images
 		extraWidthPixel = 0
