@@ -53,30 +53,32 @@ if args.delete:
 targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
 height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
-print(width,height)
+print("Dimensions of grid image: ", width, height)
+
 #obtain images and put in Downloads/keyword directory
 if not skip:
 	downloadTries = 0
 	searchSize = ">400*300" #probably remove this
-	image_scraper.search(keyword, limit, searchSize)
-	while (len(os.listdir("Downloads/"+keyword+"/")) <= 0) and (downloadTries < 100):
+	downloadImages = []								 #THIS IS A LIST OF IMAGE CLASS OBJECTS THAT SHOULD BE POPULATED FROM BELOW (NOT USED NOW)
+	image_scraper.search(keyword, limit, searchSize) #IDEALLY THIS SHOULD RETURN A LIST OF IMAGE OBJECTS
+	while (len(os.listdir("Downloads/"+keyword+"/")) <= 0) and (downloadTries < 100):	#IDEALLY IT CHECKS LEN OF LIST OF IMAGE OBJECTS (DEPENDENT)
 		print("false start, attempt number: " + str(downloadTries))
-		image_scraper.search(keyword, limit, searchSize)
+		image_scraper.search(keyword, limit, searchSize)								#THIS SHOULD BE ADJUSTED TOO
 		downloadTries += 1
 
 #crop downloaded images and put into Cropped/keyword directory
-image_scraper.crop(keyword, width, height)
+image_scraper.crop(keyword, width, height)								#WANT TO AVOID THIS, (DEPENDENT ON FILE STRUCTURE)
 
-#turn all downloaded images into Image class
-downloadImages = []
-for download in os.listdir("Cropped/"+keyword+"/"):
-	downloadImage = Image.Image("Cropped/"+keyword+"/"+download, None)
-	downloadImages.append(downloadImage)
+#turn all downloaded images into Image class #INSTEAD OF CONVERTING TO IMAGE OBJECTS IT SHOULD CALL CROP ON EACH OBJECT (WIP)
+croppedImages = []
+for download in os.listdir("Cropped/"+keyword+"/"):						#IN DOWNLOADIMAGES
+	downloadImage = Image.Image("Cropped/"+keyword+"/"+download, None)	#CALL CROP METHOD
+	croppedImages.append(downloadImage)
 
 #order images accordingly
-orderedImages = image_ordering.OrderImages(targetImage,downloadImages, colorSim, best, repeat)
+orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat)
 
-#save ordered images to directory (for debugging)
+#save ordered images to directory (for debugging)						#(NOT DEPENDENT)
 orderedDir = "Ordered/" + keyword + "/"
 try:
 	os.mkdir(orderedDir)
@@ -102,5 +104,5 @@ mosaicFileName += ".png"
 image_builder.BuildImage(x, y, orderedImages, outputDirectory="Mosaic/" + keyword + "/", outputName=mosaicFileName)
 
 if view:
-	im = IMAGE.open("Mosaic/"+keyword+"/"+mosaicFileName)
+	im = IMAGE.open("Mosaic/"+keyword+"/"+mosaicFileName)	#DEPENDENT... kinda
 	im.show()
