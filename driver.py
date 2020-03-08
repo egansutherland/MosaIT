@@ -25,8 +25,9 @@ parser.add_argument("-r","--repeat", help = "allows repeat of images in mosaic",
 parser.add_argument("-v","--view", help = "views the completed mosaic", action = "store_true")
 parser.add_argument("-d","--delete", help = "clears everything in Downloads, Cropped, Grid, Ordered, and Mosaic directories", action = "store_true")
 parser.add_argument("-c","--colorSim", help = "sets a color similarity threshold", type = float, default = 0)
-parser.add_argument("-i","--input", help = "filename of desired target image in Input directory", default = os.listdir("Input/")[0])
-
+parser.add_argument("-i","--input", help = "filepath to target image", default = os.listdir("Input/")[0])
+parser.add_argument("-o","--outputPath",help = "path to output Mosaic", default = "Mosaic/")
+parser.add_argument("-n","--outputName",help = "name of output file", default = None)
 
 #get all the args
 args = parser.parse_args()
@@ -43,14 +44,19 @@ view = args.view
 
 colorSim = args.colorSim
 targetImageFile = args.input
-targetImageFileName = targetImageFile.split(".")[0]
+targetImageFileName = targetImageFile.split("/")[-1].split(".")[0]
+output = args.outputPath #output file path
+outputName = args.outputName #output file name
 
 
 if args.delete:
 	os.system("sh cleanOutput.sh")
 
 #open targetImage and find height and width
-targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
+if not "/" in targetImageFile:
+	targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
+else:
+	targetImage = TargetImage.TargetImage(targetImageFile, x, y)
 height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
 print("Dimensions of grid image: ", width, height)
@@ -90,18 +96,25 @@ for n,ordImg in enumerate(orderedImages):
 	cv.imwrite(orderedDir+str(n)+".png",ordImg.image)
 
 #make the filename for the completed mosaic
-mosaicFileName = targetImageFileName + str(x) + "_" + str(y)
-if best:
-	mosaicFileName += "_b"
-else:
-	mosaicFileName += "_" + str(colorSim)
-if repeat:
-	mosaicFileName += "_r"
-mosaicFileName += ".png"
+mosaicFileName = outputName
 
+if mosaicFileName == None:
+	mosaicFileName = targetImageFileName + str(x) + "_" + str(y)
+	if best:
+		mosaicFileName += "_b"
+	else:
+		mosaicFileName += "_" + str(colorSim)
+	if repeat:
+		mosaicFileName += "_r"
+	mosaicFileName += ".png"
 
 #build mosaic out of ordered images
-image_builder.BuildImage(x, y, orderedImages, outputDirectory="Mosaic/" + keyword + "/", outputName=mosaicFileName)
+outputFilePath = None
+if not (output == "Mosaic/"):
+	outputFilePath = output
+else:
+	outputFilePath = output + keyword + "/"
+image_builder.BuildImage(x, y, orderedImages, outputDirectory=outputFilePath, outputName=mosaicFileName)
 
 if view:
 	im = IMAGE.open("Mosaic/"+keyword+"/"+mosaicFileName)	#DEPENDENT... kinda
