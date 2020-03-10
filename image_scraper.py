@@ -4,11 +4,11 @@ import os
 import math
 
 #assumes not bigger than 640*480
-def search(keyword, limit=100, searchSize=">400*300"):
+def search(keyword, outDir, limit=100, searchSize=">400*300"):
 
 	response = gid.googleimagesdownload()
 	cwd = os.getcwd()
-	arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":"Downloads"}
+	arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":outDir}
 	paths = response.download(arguments)
 	#print(paths)
 
@@ -16,9 +16,9 @@ def search(keyword, limit=100, searchSize=">400*300"):
 	# 	print("THIS IS A PATH\n")
 	# 	print(path)
 
-def crop(keyword, width, height):
-	inDir = "Downloads/" + keyword + "/"
-	outDir = "Cropped/" + keyword + "/"
+def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
+	# inDir = "Downloads/" + keyword + "/"
+	# outDir = "Cropped/" + keyword + "/"
 	try:
 		os.mkdir(outDir)
 	except:
@@ -63,7 +63,7 @@ def crop(keyword, width, height):
 
 		#if it can't be saved as a png file, remove it
 		try:
-			im1.save(outDir + file, format="png")
+			im1.save(outDir + "/" + file, format="png")
 		except:
 			print("couldnt save")
 			#os.remove(inDir + file)

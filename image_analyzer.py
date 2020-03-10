@@ -1,10 +1,11 @@
 import os
 import cv2 as cv
 import Image
+import tempfile
 
 def gridify(x, y, im, filepath):
 	filename = filepath.split("/")[1]
-	gridDir = "Grid/" + filename + "/"
+	gridDir = tempfile.mkdtemp()
 	try:
 		os.mkdir(gridDir)
 	except:

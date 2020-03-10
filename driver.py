@@ -9,6 +9,7 @@ import argparse
 import sys
 import os
 import math
+import tempfile
 import cv2 as cv
 
 from PIL import Image as IMAGE
@@ -28,6 +29,7 @@ parser.add_argument("-c","--colorSim", help = "sets a color similarity threshold
 parser.add_argument("-i","--input", help = "filepath to target image", default = None)
 parser.add_argument("-o","--outputPath",help = "path to output Mosaic", default = "Mosaic/")
 parser.add_argument("-n","--outputName",help = "name of output file", default = None)
+parser.add_argument("-a", "--downloadsDirectory", help = "path to downloads if -s specified", default = "/root/MosaIT/Downloads")
 
 #get all the args
 args = parser.parse_args()
@@ -47,7 +49,7 @@ targetImageFile = args.input
 targetImageFileName = targetImageFile.split("/")[-1].split(".")[0]
 output = args.outputPath #output file path
 outputName = args.outputName #output file name
-
+downloadsDirectory = args.downloadsDirectory
 
 if args.delete:
 	os.system("sh cleanOutput.sh")
@@ -61,39 +63,48 @@ height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
 print("Dimensions of grid image: ", width, height)
 
-#obtain images and put in Downloads/keyword directory
+#make temp directory for downloads
+if (downloadsDirectory == None) and skip:
+	downloadsDirectory = tempfile.mkdtemp()
+	
+#obtain images and put in temp Downloads directory
 if not skip:
 	downloadTries = 0
 	searchSize = ">400*300" #probably remove this
 	downloadImages = []								 #THIS IS A LIST OF IMAGE CLASS OBJECTS THAT SHOULD BE POPULATED FROM BELOW (NOT USED NOW)
-	image_scraper.search(keyword, limit, searchSize) #IDEALLY THIS SHOULD RETURN A LIST OF IMAGE OBJECTS
-	while (len(os.listdir("Downloads/"+keyword+"/")) <= 0) and (downloadTries < 100):	#IDEALLY IT CHECKS LEN OF LIST OF IMAGE OBJECTS (DEPENDENT)
+	image_scraper.search(keyword, downloadsDirectory, limit, searchSize) #IDEALLY THIS SHOULD RETURN A LIST OF IMAGE OBJECTS
+	while (len(os.listdir(downloadsDirectory)) <= 0) and (downloadTries < 100):	#IDEALLY IT CHECKS LEN OF LIST OF IMAGE OBJECTS (DEPENDENT)
 		print("false start, attempt number: " + str(downloadTries))
-		image_scraper.search(keyword, limit, searchSize)								#THIS SHOULD BE ADJUSTED TOO
+		image_scraper.search(keyword, downloadsDirectory, limit, searchSize)								#THIS SHOULD BE ADJUSTED TOO
 		downloadTries += 1
 
+#make temp directory for crop
+cropDirectory = tempfile.mkdtemp()
+files = os.listdir(cropDirectory)
+
 #crop downloaded images and put into Cropped/keyword directory
-image_scraper.crop(keyword, width, height)								#WANT TO AVOID THIS, (DEPENDENT ON FILE STRUCTURE)
+image_scraper.crop(keyword, width, height, downloadsDirectory, cropDirectory)
+files = os.listdir(cropDirectory)
 
 #turn all downloaded images into Image class #INSTEAD OF CONVERTING TO IMAGE OBJECTS IT SHOULD CALL CROP ON EACH OBJECT (WIP)
 croppedImages = []
-for download in os.listdir("Cropped/"+keyword+"/"):						#IN DOWNLOADIMAGES
-	downloadImage = Image.Image("Cropped/"+keyword+"/"+download, None)	#CALL CROP METHOD
+for download in os.listdir(cropDirectory):						#IN DOWNLOADIMAGES
+	downloadImage = Image.Image(cropDirectory+"/"+download, None)	#CALL CROP METHOD
 	croppedImages.append(downloadImage)
 
 #order images accordingly
 orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat)
 
 #save ordered images to directory (for debugging)						#(NOT DEPENDENT)
-orderedDir = "Ordered/" + keyword + "/"
-try:
-	os.mkdir(orderedDir)
-except:
-	print(orderedDir,"exists... removing files")
-	for f in os.listdir(orderedDir):
-		os.remove(orderedDir + f)
-for n,ordImg in enumerate(orderedImages):
-	cv.imwrite(orderedDir+str(n)+".png",ordImg.image)
+# orderedDir = "Ordered/" + keyword + "/"
+# try:
+# 	os.mkdir(orderedDir)
+# except:
+# 	print(orderedDir,"exists... removing files")
+# 	for f in os.listdir(orderedDir):
+# 		os.remove(orderedDir + f)
+# for n,ordImg in enumerate(orderedImages):
+# 	cv.imwrite(orderedDir+str(n)+".png",ordImg.image)
 
 #make the filename for the completed mosaic
 mosaicFileName = outputName
@@ -109,11 +120,11 @@ if mosaicFileName == None:
 	mosaicFileName += ".png"
 
 #build mosaic out of ordered images
-outputFilePath = None
-if not (output == "Mosaic/"):
-	outputFilePath = output
-else:
-	outputFilePath = output
+outputFilePath = output
+# if not (output == "Mosaic/"):
+# 	outputFilePath = output
+# else:
+# 	outputFilePath = output
 image_builder.BuildImage(x, y, orderedImages, outputDirectory=outputFilePath, outputName=mosaicFileName)
 
 if view:

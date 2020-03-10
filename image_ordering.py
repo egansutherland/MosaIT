@@ -9,7 +9,7 @@ import TargetImage
 # target is of type TargetImage
 # inputImages is an array of type Image
 def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
-
+	#print("length: ", len(inputImages))
 	outputImages = []
 	for i in target.grid:
 		colorSimBest = 0
