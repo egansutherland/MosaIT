@@ -113,7 +113,7 @@ outputFilePath = None
 if not (output == "Mosaic/"):
 	outputFilePath = output
 else:
-	outputFilePath = output + keyword + "/"
+	outputFilePath = output
 image_builder.BuildImage(x, y, orderedImages, outputDirectory=outputFilePath, outputName=mosaicFileName)
 
 if view:
