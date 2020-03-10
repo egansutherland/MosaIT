@@ -117,5 +117,5 @@ else:
 image_builder.BuildImage(x, y, orderedImages, outputDirectory=outputFilePath, outputName=mosaicFileName)
 
 if view:
-	im = IMAGE.open("Mosaic/"+keyword+"/"+mosaicFileName)	#DEPENDENT... kinda
+	im = IMAGE.open(outputFilePath+"/"+mosaicFileName)	#DEPENDENT... kinda
 	im.show()
