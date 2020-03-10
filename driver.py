@@ -29,7 +29,7 @@ parser.add_argument("-c","--colorSim", help = "sets a color similarity threshold
 parser.add_argument("-i","--input", help = "filepath to target image", default = None)
 parser.add_argument("-o","--outputPath",help = "path to output Mosaic", default = "Mosaic/")
 parser.add_argument("-n","--outputName",help = "name of output file", default = None)
-parser.add_argument("-a", "--downloadsDirectory", help = "path to downloads if -s specified", default = "/root/MosaIT/Downloads")
+parser.add_argument("-a", "--downloadsDirectory", help = "path to downloads if -s specified", default = "/root/MosaIT/Download/")
 
 #get all the args
 args = parser.parse_args()
