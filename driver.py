@@ -25,7 +25,7 @@ parser.add_argument("-r","--repeat", help = "allows repeat of images in mosaic",
 parser.add_argument("-v","--view", help = "views the completed mosaic", action = "store_true")
 parser.add_argument("-d","--delete", help = "clears everything in Downloads, Cropped, Grid, Ordered, and Mosaic directories", action = "store_true")
 parser.add_argument("-c","--colorSim", help = "sets a color similarity threshold", type = float, default = 0)
-parser.add_argument("-i","--input", help = "filepath to target image", default = os.listdir("Input/")[0])
+parser.add_argument("-i","--input", help = "filepath to target image", default = None)
 parser.add_argument("-o","--outputPath",help = "path to output Mosaic", default = "Mosaic/")
 parser.add_argument("-n","--outputName",help = "name of output file", default = None)
 
