@@ -3,8 +3,9 @@ import cv2 as cv
 import Image
 
 def gridify(x, y, im, filepath):
-	filename = filepath.split("/")[1]
-	gridDir = "Grid/" + filename + "/"
+	filename = filepath.split("/")[-1]
+	print("Filename:",filename)
+	gridDir = filepath.split("/").pop(-1)
 	try:
 		os.mkdir(gridDir)
 	except:

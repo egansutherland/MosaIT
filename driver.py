@@ -56,6 +56,7 @@ if args.delete:
 if not "/" in targetImageFile:
 	targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
 else:
+	print("FILE:",targetImageFile)
 	targetImage = TargetImage.TargetImage(targetImageFile, x, y)
 height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
