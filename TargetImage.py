@@ -12,7 +12,3 @@ class TargetImage:
 		self.y = y
 		self.grid = image_analyzer.gridify(self.x, self.y, self.image, self.filepath)
 		
-
-
-
-

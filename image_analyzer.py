@@ -16,7 +16,7 @@ def gridify(x, y, im, filepath):
 	# 		os.remove(gridDir + f)
 
 	#slightly crop target image so divisible by x and y
-	sys.stdout.write(im.filepath)
+	sys.stdout.write(filepath)
 	height = im.shape[0]
 	y_rem = height%y
 	width = im.shape[1]
