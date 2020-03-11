@@ -19,6 +19,7 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
 	# inDir = "Downloads/" + keyword + "/"
 	# outDir = "Cropped/" + keyword + "/"
+	print(outDir)
 	try:
 		os.mkdir(outDir)
 	except:
@@ -30,6 +31,7 @@ def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
 			im = Image.open(inDir + file)
 		except:
 			#remove files that can't be opened
+			print("inDir: ", inDir, "    file: ", file)
 			os.remove(inDir + file)
 			continue
 
