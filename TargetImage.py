@@ -4,6 +4,7 @@ import image_analyzer
 
 class TargetImage:
 	def __init__(self, filepath, x, y):
+		console.log(self.filepath)
 		self.filepath = filepath
 		self.image = cv.imread(filepath, cv.IMREAD_COLOR)
 		self.x = x
