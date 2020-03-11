@@ -2,6 +2,7 @@ import os
 import cv2 as cv
 import Image
 import tempfile
+import sys
 
 def gridify(x, y, im, filepath):
 	filename = filepath.split("/")[1]
