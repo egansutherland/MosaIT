@@ -5,15 +5,17 @@ import tempfile
 
 def gridify(x, y, im, filepath):
 	filename = filepath.split("/")[1]
+	sys.stdout.write("filename: " + filename)
 	gridDir = tempfile.mkdtemp()
-	try:
-		os.mkdir(gridDir)
-	except:
-		print(gridDir,"exists... removing files")
-		for f in os.listdir(gridDir):
-			os.remove(gridDir + f)
+	# try:
+	# 	os.mkdir(gridDir)
+	# except:
+	# 	print(gridDir,"exists... removing files")
+	# 	for f in os.listdir(gridDir):
+	# 		os.remove(gridDir + f)
 
 	#slightly crop target image so divisible by x and y
+	sys.stdout.write(im.filepath)
 	height = im.shape[0]
 	y_rem = height%y
 	width = im.shape[1]
