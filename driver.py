@@ -57,7 +57,7 @@ if args.delete:
 
 #open targetImage and find height and width
 if not "/" in targetImageFile:
-	targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
+	targetImage = TargetImage.TargetImage("/root/MosaIT/Input/"+targetImageFile, x, y)
 else:
 	sys.stdout.write("target file path: " + targetImageFile + "\n")
 	targetImage = TargetImage.TargetImage(targetImageFile, x, y)
