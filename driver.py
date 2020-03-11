@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import image_scraper
 import image_builder
 import image_analyzer
@@ -58,7 +59,7 @@ if args.delete:
 if not "/" in targetImageFile:
 	targetImage = TargetImage.TargetImage("Input/"+targetImageFile, x, y)
 else:
-	sys.stdout.write(targetImageFile)
+	sys.stdout.write("target file path: " + targetImageFile)
 	targetImage = TargetImage.TargetImage(targetImageFile, x, y)
 height = targetImage.grid[0].image.shape[0]
 width = targetImage.grid[0].image.shape[1]
