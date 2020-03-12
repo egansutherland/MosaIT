@@ -17,10 +17,13 @@ class Image: # If split is needed, uncomment cv.split line
 	# self and other must be of type Image
 	def colorSimilarity(self, other):
 		cmpMethod = 0
-		rSim = cv.compareHist( self.r_hist, other.r_hist, method=cmpMethod)
-		gSim = cv.compareHist( self.g_hist, other.g_hist, method=cmpMethod)
-		bSim = cv.compareHist( self.b_hist, other.b_hist, method=cmpMethod)
+		try:
+			rSim = cv.compareHist( self.r_hist, other.r_hist, method=cmpMethod)
+			gSim = cv.compareHist( self.g_hist, other.g_hist, method=cmpMethod)
+			bSim = cv.compareHist( self.b_hist, other.b_hist, method=cmpMethod)
 
-		sim = (rSim + gSim + bSim)/3
+			sim = (rSim + gSim + bSim)/3
+		except:
+			return 0
 
 		return sim
