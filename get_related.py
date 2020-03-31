@@ -4,6 +4,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from collections import OrderedDict
@@ -63,7 +65,6 @@ def getSrc(keyword):
 	driver.get(baseurl)
 
 	sources = []
-	seeMoreNum = 0
 
 	try:
 		elem = driver.find_element(By.CLASS_NAME, 'suggestion-title')
@@ -79,7 +80,7 @@ def getSrc(keyword):
 
 	driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
 
-	for j in range(0..12)
+	for j in range(0, 12):
 		#change dominant color
 		changeDomColor(driver, j)
 
@@ -102,6 +103,8 @@ def getSrc(keyword):
 def scrollToBottom(driver):
 	last_height = driver.execute_script("return document.body.scrollHeight")
 
+	seeMoreNum = 0
+
 	while True:
 		# Scroll down to bottom
 		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -113,12 +116,39 @@ def scrollToBottom(driver):
 		new_height = driver.execute_script("return document.body.scrollHeight")
 		if new_height == last_height:
 			seeMoreNum += 1
-			driver.find_element(By.XPATH, '//*[@id="bop_container"]/div[2]/a')
+			try:
+				driver.find_element(By.XPATH, '//*[@id="bop_container"]/div[2]/a')
+			except NoSuchElementException:
+				continue
 		if seeMoreNum >= 3:
 			break
 		last_height = new_height
 
 def changeDomColor(driver, ind):
 	colors = ['//*[@id="ftrB"]/ul/li[2]/div/div/div/div[1]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[2]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[3]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[4]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[5]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[6]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[7]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[8]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[9]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[10]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[11]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[12]']
+	time.sleep(0.5)
+	colorFilter = None
+	try:
+		print('not excepted')
+		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span').click()
+	except NoSuchElementException:
+		#open filters
+		print('excepted')
+		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]').click()
+		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
+	except ElementNotInteractableException:
+		print('super excepted')
+		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]/img[1]').click() 
+		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
+	except ElementClickInterceptedException:
+		print('super duper excepted')
+		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]').click()
+		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 
-	
+	time.sleep(1)
+	colorFilter.click()
+	time.sleep(1)
+	driver.find_element(By.XPATH, colors[ind]).click()
+
+
+
