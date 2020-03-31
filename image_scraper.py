@@ -1,20 +1,49 @@
 from google_images_download import google_images_download as gid
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from collections import OrderedDict
 from PIL import Image
+import get_related as gr
+import numpy as np
 import os
 import math
 
 #assumes not bigger than 640*480
 def search(keyword, outDir, limit=100, searchSize=">400*300"):
+	####### Old code based on google_images_download #########
+	# response = gid.googleimagesdownload()
+	# cwd = os.getcwd()
+	# arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":outDir}
+	# paths = response.download(arguments)
+	# #print(paths)
 
-	response = gid.googleimagesdownload()
-	cwd = os.getcwd()
-	arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":outDir}
-	paths = response.download(arguments)
-	#print(paths)
+	# # for path in paths:
+	# # 	print("THIS IS A PATH\n")
+	# # 	print(path)
 
-	# for path in paths:
-	# 	print("THIS IS A PATH\n")
-	# 	print(path)
+	baseurl = "http://www.bing.com/images/search?q=" + keyword
+	options = Options()
+	options.headless = True
+	driver = webdriver.Chrome(chrome_options=options)
+	
+	driver.get(baseurl)
+
+	# get related terms
+	terms = []
+	terms.append(keyword)
+	terms += gr.getTerms(driver)
+	print('numTerms: ' + str(len(terms)))
+	sources = []
+	i = 0
+
+	while (len(sources) < 2*limit) and (i < len(terms)):
+		sources += gr.getSrc(terms[i])
+		i += 1
+		print('numSources: ' + str(len(sources)))
+
+	sources = list(OrderedDict.fromkeys(sources))
+	print(sources)
+	print(len(sources))
 
 def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
 	# inDir = "Downloads/" + keyword + "/"
