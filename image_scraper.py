@@ -29,7 +29,9 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 	baseurl = "http://www.bing.com/images/search?q=" + keyword
 	options = Options()
 	options.headless = True
-	driver = webdriver.Chrome("/usr/bin/chromedriver",chrome_options=options)
+	options.add_argument('--no-sandbox')
+	options.add_argument('--disable-dev-shm-usage')
+	driver = webdriver.Chrome(chrome_options=options)
 	
 	driver.get(baseurl)
 
