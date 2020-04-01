@@ -1,12 +1,17 @@
-from google_images_download import google_images_download as gid
+# from google_images_download import google_images_download as gid
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from collections import OrderedDict
 from PIL import Image
+import pymp
 import get_related as gr
 import numpy as np
 import os
 import math
+
+global sources
+global numSources
+global parallelIndex
 
 #assumes not bigger than 640*480
 def search(keyword, outDir, limit=100, searchSize=">400*300"):
@@ -32,18 +37,47 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 	terms = []
 	terms.append(keyword)
 	terms += gr.getTerms(driver)
+	numTerms = len(terms)
+
+	# for ind in range(0,numTerms):
+	# 	parallelTerms[ind] = terms[ind]
+
 	print('numTerms: ' + str(len(terms)))
 	sources = []
+	numSources = 0
+	parallelIndex = -1
 	i = 0
 
-	while (len(sources) < 2*limit) and (i < len(terms)):
-		sources += gr.getSrc(terms[i])
-		i += 1
-		print('numSources: ' + str(len(sources)))
+	# while (len(sources) < 2*limit) and (i < len(terms)):
+	# 	sources += gr.getSrc(terms[i])
+	# 	i += 1
+	# 	#print('numSources: ' + str(len(sources)))
 
+	# numSources = pymp.shared.array((1,), dtype='uint8')
+	linkLimit = 2*limit
+	tempIndex = 0
+	#parallel version
+	with pymp.Parallel(4) as p:
+		for index in p.xrange(0,numTerms):
+			if numSources < linkLimit:
+				# tempIndex = 0
+				# with p.lock:
+				# 	parallelIndex += 1
+				# 	tempIndex = parallelIndex
+				tempSources = gr.getSrc(terms[index])
+				with p.lock:
+					sources += tempSources
+					numSources = len(sources)
+					print('term: ' + str(index) + '    numSources: ' + str(numSources))
+
+	print('numSources with dupes: ' + str(len(sources)))				
 	sources = list(OrderedDict.fromkeys(sources))
-	print(sources)
-	print(len(sources))
+	#print(sources)
+	print('numSources no dupes: ' + str(len(sources)))
+
+
+
+	#python requests for download
 
 def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
 	# inDir = "Downloads/" + keyword + "/"

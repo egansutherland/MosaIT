@@ -58,9 +58,13 @@ def bypass_safe(driver):
 # get list of image sources
 def getSrc(keyword):
 
+	# sources = []
+	# if numSources > limit:
+	# 	return sources
+
 	baseurl = "http://www.bing.com/images/search?q=" + str(keyword)
 	options = Options()
-	options.headless = False
+	options.headless = True
 	driver = webdriver.Chrome(chrome_options=options)
 
 	driver.get(baseurl)
@@ -75,12 +79,13 @@ def getSrc(keyword):
 	scrollToBottom(driver)
 
 	elements = driver.find_elements(By.CLASS_NAME, 'mimg')
-	
+	# potential parallelize
 	for i in elements:
 		sources.append(i.get_attribute("src"))
 
 	driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
 
+	#potential parallelize
 	for j in range(0, 12):
 		#change dominant color
 		changeDomColor(driver, j)
@@ -132,21 +137,21 @@ def changeDomColor(driver, ind):
 	colors = ['//*[@id="ftrB"]/ul/li[2]/div/div/div/div[1]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[2]/a/div', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[3]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[4]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[5]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[6]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[7]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[8]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[9]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[10]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[11]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[12]']
 	time.sleep(0.5)
 	colorFilter = None
-	print(ind)
+	#print(ind)
 	try:
-		print('not excepted')
+		#print('not excepted')
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span').click()
 	except NoSuchElementException:
 		#open filters
-		print('excepted')
+		#print('excepted')
 		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]').click()
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 	except ElementNotInteractableException:
-		print('super excepted')
+		#print('super excepted')
 		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]/img[1]').click() 
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 	except ElementClickInterceptedException:
-		print('super duper excepted')
+		#print('super duper excepted')
 		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]').click()
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 	except StaleElementReferenceException:
