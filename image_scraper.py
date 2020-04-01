@@ -29,7 +29,7 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 	baseurl = "http://www.bing.com/images/search?q=" + keyword
 	options = Options()
 	options.headless = True
-	driver = webdriver.Chrome(chrome_options=options)
+	driver = webdriver.Chrome("/usr/local/bin/chromedriver",chrome_options=options)
 	
 	driver.get(baseurl)
 
