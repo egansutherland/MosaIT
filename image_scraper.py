@@ -8,7 +8,7 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 
 	response = gid.googleimagesdownload()
 	cwd = os.getcwd()
-	arguments = {"chromedriver":cwd+"/chrome/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":outDir}
+	arguments = {"chromedriver":"/usr/bin/chromedriver", "keywords":keyword,"limit":limit,"print_urls":True,"size":searchSize,"output_directory":outDir}
 	paths = response.download(arguments)
 	#print(paths)
 
