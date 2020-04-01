@@ -59,7 +59,7 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 	linkLimit = 2*limit
 	tempIndex = 0
 	#parallel version
-	with pymp.Parallel(1) as p:
+	with pymp.Parallel(4) as p:
 		for index in p.xrange(0,numTerms):
 			if numSources < linkLimit:
 				# tempIndex = 0
