@@ -57,23 +57,24 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 
 	# numSources = pymp.shared.array((1,), dtype='uint8')
 	linkLimit = 2*limit
-	tempIndex = 0
+	tempIndex =  -1
 	#parallel version
-	with pymp.Parallel(4) as p:
-		for index in p.xrange(0,numTerms):
-			if numSources < linkLimit:
-				# tempIndex = 0
-				# with p.lock:
-				# 	parallelIndex += 1
-				# 	tempIndex = parallelIndex
-				tempSources = gr.getSrc(terms[index])
-				with p.lock:
-					sources += tempSources
-					numSources = len(sources)
-					print('term: ' + str(index) + '    numSources: ' + str(numSources))
+	testList = pymp.shared.list()
+	counter = pymp.shared.list()
+	while len(testList) <= linkLimit:
+		tempIndex += 1
+		counter.append(tempIndex)
+		with pymp.Parallel(4) as p:
+			for index in p.xrange(0,4):
+				if numSources < linkLimit:
+					tempSources = gr.getSrc(terms[index + counter[-1]*4])
+					with p.lock:
+						testList.extend(tempSources)
+						numSources = len(testList)
+						print('term: ' + str(index + counter[-1]*4) + '    numSources: ' + str(numSources))
 
-	print('numSources with dupes: ' + str(len(sources)))				
-	sources = list(OrderedDict.fromkeys(sources))
+	print('numSources with dupes: ' + str(len(testList)))
+	sources = list(OrderedDict.fromkeys(testList))
 	#print(sources)
 	print('numSources no dupes: ' + str(len(sources)))
 
