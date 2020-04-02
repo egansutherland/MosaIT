@@ -2,19 +2,21 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from collections import OrderedDict
-from PIL import Image
+from PIL import Image as IMAGE
 import pymp
 import get_related as gr
 import numpy as np
 import os
 import math
+import requests
+import Image
 
 global sources
 global numSources
 global parallelIndex
 
 #assumes not bigger than 640*480
-def search(keyword, outDir, limit=100, searchSize=">400*300"):
+def search(keyword, limit=100):
 	####### Old code based on google_images_download #########
 	# response = gid.googleimagesdownload()
 	# cwd = os.getcwd()
@@ -64,7 +66,7 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 	while len(testList) <= linkLimit:
 		tempIndex += 1
 		counter.append(tempIndex)
-		with pymp.Parallel(4) as p:
+		with pymp.Parallel(1) as p:
 			for index in p.xrange(0,4):
 				if numSources < linkLimit:
 					tempSources = gr.getSrc(terms[index + counter[-1]*4])
@@ -77,24 +79,45 @@ def search(keyword, outDir, limit=100, searchSize=">400*300"):
 	sources = list(OrderedDict.fromkeys(testList))
 	#print(sources)
 	print('numSources no dupes: ' + str(len(sources)))
+	return sources
 
+def download(downloadDir, sources, width, height, limit=100):
+	index = 0
+	croppedImages = []
+	for source in sources:
+		if len(croppedImages) >= limit:
+			return croppedImages
+		try:
+			r = requests.get(source)
+		except:
+			continue
+		contentType = r.headers.get('content-type')
+		if 'image' in contentType:
+			tempType = contentType.split('/')[-1]
+			filename = downloadDir + str(index) + '.' + tempType
+			open(filename, 'w+b').write(r.content)
+			index += 1
+			im = Image.Image(filename, source)
+			# need to save here
+			if im.image.shape[0] >= height and im.image.shape[1] >= width:
+				im.crop(width,height)
+				croppedImages.append(im)
 
+	return croppedImages
 
-	#python requests for download
-
-def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
+def cropDirectory(keyword, width, height, inDir): #add inDir outDir as args
 	# inDir = "Downloads/" + keyword + "/"
 	# outDir = "Cropped/" + keyword + "/"
-	print(outDir)
-	try:
-		os.mkdir(outDir)
-	except:
-		print(outDir,"exists... removing files")
-		for f in os.listdir(outDir):
-			os.remove(outDir + f)
+	#print(outDir)
+	# try:
+	# 	os.mkdir(outDir)
+	# except:
+	# 	print(outDir,"exists... removing files")
+	# 	for f in os.listdir(outDir):
+	# 		os.remove(outDir + f)
 	for file in os.listdir(inDir):
 		try:
-			im = Image.open(inDir + file)
+			im = IMAGE.open(inDir + file)
 		except:
 			#remove files that can't be opened
 			print("inDir: ", inDir, "    file: ", file)
@@ -114,7 +137,7 @@ def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
 		if (scale > 1):
 			realWidth = math.floor(realWidth/scale)
 			realHeight = math.floor(realHeight/scale)
-			im = im.resize((realWidth,realHeight), resample=Image.NEAREST)
+			im = im.resize((realWidth,realHeight), resample=IMAGE.NEAREST)
 
 		#Crop images
 		extraWidthPixel = 0
@@ -130,8 +153,8 @@ def crop(keyword, width, height, inDir, outDir): #add inDir outDir as args
 		im1 = im.crop((left,top,right,bottom))
 
 		#if it can't be saved as a png file, remove it
-		try:
-			im1.save(outDir + "/" + file, format="png")
-		except:
-			print("couldnt save")
+		# try:
+		# 	im1.save(outDir + "/" + file, format="png")
+		# except:
+		# 	print("couldnt save")
 			#os.remove(inDir + file)
