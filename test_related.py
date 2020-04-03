@@ -1,12 +1,15 @@
 import sys
 import get_related
 import image_scraper
+import image_ordering
+import image_builder
+import TargetImage
 import time
 import cv2 as cv
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
 
-keyword = "dogs"
+keyword = "cats"
 
 # baseurl = "http://www.bing.com/images/search?q=" + keyword
 # options = Options()
@@ -19,13 +22,25 @@ keyword = "dogs"
 #sources = get_related.getSrc(keyword)
 #print(sources)
 #print(len(sources))
-start = time.perf_counter()
-sources = image_scraper.search(keyword, limit=200)
-crop = image_scraper.download('Downloads/', sources, 100, 100, limit=200)
-cv.imwrite('croppedTest/0.png',crop[0].image)
-print(crop[0].image)
-print('length of crop: ' + str(len(crop)))
-cv.imshow('windo', crop[0].image)
-end = time.perf_counter()
-diff = end - start
-print('total time: ' + str(diff))
+x = 30
+y = 30
+targetImageFile = 'Input/input.jpg'
+targetImage = TargetImage.TargetImage(targetImageFile, x, y)
+height = targetImage.grid[0].image.shape[0]
+width = targetImage.grid[0].image.shape[1]
+
+
+startTotal = time.perf_counter()
+sources = image_scraper.search(keyword, limit=15000)
+croppedImages = image_scraper.download('Downloads/', sources, width, height, limit=15000)
+
+#cv.imwrite('croppedTest/0.png',crop[0].image)
+#print(crop[0].image)
+print('length of crop: ' + str(len(croppedImages)))
+
+orderedImages = image_ordering.OrderImages(targetImage,croppedImages, 0, True, False)
+image_builder.BuildImage(x, y, orderedImages, outputDirectory='Mosaic/', outputName='yay.png')
+#cv.imshow('windo', crop[0].image)
+endTotal = time.perf_counter()
+totalDiff = endTotal - startTotal
+print('total time: ' + str(totalDiff))
