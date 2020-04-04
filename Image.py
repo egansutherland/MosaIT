@@ -31,12 +31,12 @@ class Image: # If split is needed, uncomment cv.split line
 		realHeight = self.image.shape[0]
 		realWidth = self.image.shape[1]
 		#print("realHeight: ",realHeight,"realWidth",realWidth)
-
+		if realWidth == width and realHeight == height:
+			return
 		#scale down image
 		widthScale = width/realWidth
 		heightScale = height/realHeight
 		scale = max(widthScale,heightScale)
-		#print("scale:",scale)
 		im = self.image
 		if (scale < 0.9):
 			im = cv.resize(self.image, (0,0), fx=scale, fy=scale)
