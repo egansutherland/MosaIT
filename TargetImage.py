@@ -18,12 +18,6 @@ class TargetImage:
 		#filename = filepath.split("/")[1]
 		#sys.stdout.write("filename: " + filename)
 		gridDir = tempfile.mkdtemp()
-		try:
-			os.mkdir(gridDir)
-		except:
-		 	print(gridDir,"exists... removing files")
-		 	for f in os.listdir(gridDir):
-		 		os.remove(gridDir + f)
 
 		#slightly crop target image so divisible by x and y
 		#sys.stdout.write(filepath)
