@@ -32,5 +32,7 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
 		if best:
 			outputImages.append(imBest)
 			if not repeat:
+				if len(inputImages) == 0:
+					return []
 				inputImages.remove(imBest)
 	return outputImages
