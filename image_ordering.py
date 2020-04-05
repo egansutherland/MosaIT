@@ -9,35 +9,27 @@ import TargetImage
 # target is of type TargetImage
 # inputImages is an array of type Image
 def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
-	print("length: ", len(inputImages))
 	outputImages = []
-	testInd = 0
-	for i in target.grid:
+	for gridIm in target.grid:
 		colorSimBest = 0
 		imBest = None
-		for j in inputImages:
-			colorSim = i.colorSimilarity(j)
+		for downloadIm in inputImages:
+			colorSim = gridIm.colorSimilarity(downloadIm)
 			if not best:
 				if colorSim > colorSimIn:
-					outputImages.append(j)
+					outputImages.append(downloadIm)
 					if not repeat:
-						inputImages.remove(j)
+						inputImages.remove(downloadIm)
 					break
 			else:
 				if colorSim > colorSimBest:
 					colorSimBest = colorSim
-					imBest = j
+					imBest = downloadIm
 		if best:
 			outputImages.append(imBest)
 			if not repeat:
 				try:
 					inputImages.remove(imBest)
-					testInd += 1
 				except:
-					print('failed to remove')
-					print(imBest.filepath)
-					continue
-	print('successful removals: ' + str(testInd))
-	print('output length: ' + str(len(outputImages)))
-	print('input length: ' + str(len(inputImages)))
+					print('Failed to remove ' + imBest.filepath)
 	return outputImages
