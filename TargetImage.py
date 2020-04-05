@@ -38,7 +38,7 @@ class TargetImage:
 		for i in range(self.y):
 			for j in range(self.x):
 				grid_im = self.image[i*y_ticks:(i+1)*y_ticks,j*x_ticks:(j+1)*x_ticks]
-				outpath = gridDir + str(i) + "_" + str(j) + ".png"
+				outpath = gridDir + '/' + str(i) + "_" + str(j) + ".png"
 				cv.imwrite(outpath,grid_im)
 				grids.append(Image.Image(outpath, None))
 		return grids

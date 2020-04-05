@@ -82,6 +82,7 @@ print("Dimensions of grid image (w,h): ", width, height)
 croppedImages =[]
 if not skip:
 	downloadsDirectory = tempfile.mkdtemp()
+	print(str(downloadsDirectory))
 	startSearchTime = time.perf_counter()
 	sources = image_scraper.search(keyword, limit, threads)
 	endSearchTime = time.perf_counter()

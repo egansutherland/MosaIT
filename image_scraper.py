@@ -53,13 +53,14 @@ def search(keyword, limit=100, threads=1):
 		tempIndex += 1
 		counter.append(tempIndex)
 		with pymp.Parallel(threads) as p:
-			for index in p.xrange(0,4):
+			for index in p.xrange(0,threads):
 				if numSources < linkLimit:
-					tempSources = gr.getSrc(terms[index + counter[-1]*4])
+					calcIndex = int(index + counter[-1]*threads)
+					tempSources = gr.getSrc(terms[calcIndex])
 					with p.lock:
 						testList.extend(tempSources)
 						numSources = len(testList)
-						print('term: ' + str(index + counter[-1]*4) + '\t' +terms[index + counter[-1]*4] + '\tnumSources: ' + str(numSources))
+						print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(numSources))
 
 	print('numSources with dupes: ' + str(len(testList)))
 	sources = list(OrderedDict.fromkeys(testList))
@@ -67,30 +68,36 @@ def search(keyword, limit=100, threads=1):
 	return sources
 
 def download(downloadDir, sources, width, height, limit=100, threads=1):
-	downloadCount = 0
 	croppedImages = []
-	for source in sources:
-		#print every 500 downloads
-		if (downloadCount % 500 == 0) and downloadCount != 0:
-			print("Has downloaded " + str(downloadCount) + ", using " + str(len(croppedImages)))
-		if len(croppedImages) >= limit:
-			print ("Total Downloaded and Cropped: " + str(len(croppedImages)))
-			return croppedImages
-		try:
-			r = requests.get(source)
-		except:
-			continue
-		contentType = r.headers.get('content-type')
-		if 'image' in contentType:
-			tempType = contentType.split('/')[-1]
-			filename = downloadDir + str(downloadCount) + '.' + tempType
-			open(filename, 'w+b').write(r.content) #saves the file here
-			downloadCount += 1
-			im = Image.Image(filename, source)
-			if im.image.shape[0] >= height and im.image.shape[1] >= width:
-				im.crop(width,height)
-				croppedImages.append(im)
+	numSources = len(sources)
+	testList = pymp.shared.list()
+	#downloadCount = pymp.shared.list()
+
+	with pymp.Parallel(threads) as p:
+		for source in p.range(0, numSources):
+			#print every 500 downloads
+			#if (downloadCount % 500 == 0) and downloadCount != 0:
+			#	print("Has downloaded " + str(downloadCount) + ", using " + str(len(croppedImages)))
+			if len(testList) >= limit:
+				print ("Total Downloaded and Cropped: " + str(len(croppedImages)))
+				break
+			try:
+				r = requests.get(sources[source])
+			except:
+				continue
+			contentType = r.headers.get('content-type')
+			if 'image' in contentType:
+				tempType = contentType.split('/')[-1]
+				filename = downloadDir + '/' + str(source) + '.' + tempType
+				open(filename, 'w+b').write(r.content) #saves the file here
+				#downloadCount += 1
+				im = Image.Image(filename, sources[source])
+				with p.lock:
+					if im.image.shape[0] >= height and im.image.shape[1] >= width:
+						im.crop(width,height)
+						testList.append(im)
 	print ("Only downloaded and cropped " + str(len(croppedImages)) + "/" + str(limit))
+	croppedImages = testList
 	return croppedImages
 
 def cropDirectory(keyword, width, height, inDir):
