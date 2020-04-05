@@ -31,8 +31,8 @@ width = targetImage.grid[0].image.shape[1]
 
 
 startTotal = time.perf_counter()
-sources = image_scraper.search(keyword, limit=15000)
-croppedImages = image_scraper.download('Downloads/', sources, width, height, limit=15000)
+sources = image_scraper.search(keyword, limit=15000, threads=1)
+croppedImages = image_scraper.download('Downloads/', sources, width, height, limit=15000, threads=1)
 
 #cv.imwrite('croppedTest/0.png',crop[0].image)
 #print(crop[0].image)
