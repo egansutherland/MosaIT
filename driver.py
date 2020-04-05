@@ -69,6 +69,8 @@ if not "/" in targetImageFile:
 else:
 	sys.stdout.write("TargetImage path: " + targetImageFile + "\n")
 	targetImage = TargetImage.TargetImage(targetImageFile, x, y)
+if targetImage.image == None:
+	exit()
 totalHeight = targetImage.image.shape[0]
 totalWidth = targetImage.image.shape[1]
 print("Dimensions of target image (w,h): ", totalWidth, totalHeight)

@@ -9,12 +9,16 @@ class TargetImage:
 		self.filepath = filepath
 		#sys.stdout.write(self.filepath)
 		self.image = cv.imread(filepath, cv.IMREAD_COLOR)
+		if self.image == None:
+			print ("Couldn't open TargetImage at " + filepath)
+			return None
 		self.x = x
 		self.y = y
-		#self.grid = image_analyzer.gridify(self.x, self.y, self.image, self.filepath)
 		self.grid = TargetImage.gridify(self)
 
 	def gridify(self):
+		if self.image == None:
+			return None
 		#filename = filepath.split("/")[1]
 		#sys.stdout.write("filename: " + filename)
 		gridDir = tempfile.mkdtemp()
