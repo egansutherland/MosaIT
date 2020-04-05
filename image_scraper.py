@@ -9,6 +9,7 @@ import os
 import math
 import requests
 import Image
+import multiprocessing
 
 global sources
 global numSources
@@ -36,26 +37,22 @@ def search(keyword, limit=100, threads=1):
 	sources = []
 	numSources = 0
 
-	#parallelIndex = -1
-	#i = 0
-	# while (len(sources) < 2*limit) and (i < len(terms)):
-	# 	sources += gr.getSrc(terms[i])
-	# 	i += 1
-	# 	#print('numSources: ' + str(len(sources)))
-
-	# numSources = pymp.shared.array((1,), dtype='uint8')
 	tempIndex =  -1
 
 	#parallel version
 	testList = pymp.shared.list()
-	counter = pymp.shared.list()
+	counter = multiprocessing.Value("i", -1)
+
 	while len(testList) <= linkLimit:
-		tempIndex += 1
-		counter.append(tempIndex)
+		#tempIndex += 1
+		#counter.append(tempIndex)
 		with pymp.Parallel(threads) as p:
 			for index in p.xrange(0,threads):
 				if numSources < linkLimit:
-					calcIndex = int(index + counter[-1]*threads)
+					calcIndex = 0
+					with p.lock:
+						counter.value += 1
+						calcIndex = counter.value
 					tempSources = gr.getSrc(terms[calcIndex])
 					with p.lock:
 						testList.extend(tempSources)
@@ -71,15 +68,15 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 	croppedImages = []
 	numSources = len(sources)
 	testList = pymp.shared.list()
-	#downloadCount = pymp.shared.list()
+	downloadCount = multiprocessing.Value("i", 0)
 
 	with pymp.Parallel(threads) as p:
 		for source in p.range(0, numSources):
 			#print every 500 downloads
-			#if (downloadCount % 500 == 0) and downloadCount != 0:
-			#	print("Has downloaded " + str(downloadCount) + ", using " + str(len(croppedImages)))
+			if (downloadCount.value % 500 == 0) and downloadCount.value != 0:
+				print("Has downloaded " + str(downloadCount.value) + ", using " + str(len(testList)))
 			if len(testList) >= limit:
-				print ("Total Downloaded and Cropped: " + str(len(croppedImages)))
+				print ("Total Downloaded and Cropped: " + str(len(testList)))
 				break
 			try:
 				r = requests.get(sources[source])
@@ -90,14 +87,15 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 				tempType = contentType.split('/')[-1]
 				filename = downloadDir + '/' + str(source) + '.' + tempType
 				open(filename, 'w+b').write(r.content) #saves the file here
-				#downloadCount += 1
 				im = Image.Image(filename, sources[source])
 				with p.lock:
+					downloadCount.value += 1
 					if im.image.shape[0] >= height and im.image.shape[1] >= width:
 						im.crop(width,height)
 						testList.append(im)
+
+	croppedImages = list(testList)
 	print ("Only downloaded and cropped " + str(len(croppedImages)) + "/" + str(limit))
-	croppedImages = testList
 	return croppedImages
 
 def cropDirectory(keyword, width, height, inDir):

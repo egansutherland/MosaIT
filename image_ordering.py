@@ -9,11 +9,9 @@ import TargetImage
 # target is of type TargetImage
 # inputImages is an array of type Image
 def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
-	if len(inputImages) == 0:
-		print("No images for ordering")
-		return []
-	#print("length: ", len(inputImages))
+	print("length: ", len(inputImages))
 	outputImages = []
+	testInd = 0
 	for i in target.grid:
 		colorSimBest = 0
 		imBest = None
@@ -32,7 +30,14 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
 		if best:
 			outputImages.append(imBest)
 			if not repeat:
-				if len(inputImages) == 0:
-					return []
-				inputImages.remove(imBest)
+				try:
+					inputImages.remove(imBest)
+					testInd += 1
+				except:
+					print('failed to remove')
+					print(imBest.filepath)
+					continue
+	print('successful removals: ' + str(testInd))
+	print('output length: ' + str(len(outputImages)))
+	print('input length: ' + str(len(inputImages)))
 	return outputImages
