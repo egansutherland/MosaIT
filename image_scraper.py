@@ -67,12 +67,12 @@ def search(keyword, limit=100, threads=1):
 	return sources
 
 def download(downloadDir, sources, width, height, limit=100, threads=1):
-	index = 0
+	downloadCount = 0
 	croppedImages = []
 	for source in sources:
 		#print every 500 downloads
-		if (index % 500 == 0) and index != 0:
-			print("Has downloaded " + str(index) + ", using " + str(len(croppedImages)))
+		if (downloadCount % 500 == 0) and downloadCount != 0:
+			print("Has downloaded " + str(downloadCount) + ", using " + str(len(croppedImages)))
 		if len(croppedImages) >= limit:
 			print ("Total Downloaded and Cropped: " + str(len(croppedImages)))
 			return croppedImages
@@ -83,9 +83,9 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 		contentType = r.headers.get('content-type')
 		if 'image' in contentType:
 			tempType = contentType.split('/')[-1]
-			filename = downloadDir + str(index) + '.' + tempType
+			filename = downloadDir + str(downloadCount) + '.' + tempType
 			open(filename, 'w+b').write(r.content) #saves the file here
-			index += 1
+			downloadCount += 1
 			im = Image.Image(filename, source)
 			if im.image.shape[0] >= height and im.image.shape[1] >= width:
 				im.crop(width,height)
