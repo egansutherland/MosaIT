@@ -72,12 +72,11 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 
 	with pymp.Parallel(threads) as p:
 		for source in p.range(0, numSources):
+			if len(testList) >= limit:
+				break
 			#print every 500 downloads
 			if (downloadCount.value % 500 == 0) and downloadCount.value != 0:
 				print("Has downloaded " + str(downloadCount.value) + ", using " + str(len(testList)))
-			if len(testList) >= limit:
-				print ("Total Downloaded and Cropped: " + str(len(testList)))
-				break
 			try:
 				r = requests.get(sources[source])
 			except:
@@ -88,14 +87,18 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 				filename = downloadDir + '/' + str(source) + '.' + tempType
 				open(filename, 'w+b').write(r.content) #saves the file here
 				im = Image.Image(filename, sources[source])
+				if im.image.shape[0] > height and im.image.shape[1] > width:
+					im.crop(width, height)
 				with p.lock:
 					downloadCount.value += 1
-					if im.image.shape[0] >= height and im.image.shape[1] >= width:
-						im.crop(width,height)
+					if im.image.shape[0] == height and im.image.shape[1] == width:
 						testList.append(im)
 
 	croppedImages = list(testList)
-	print ("Only downloaded and cropped " + str(len(croppedImages)) + "/" + str(limit))
+	if len(croppedImages) >= limit:
+		print ("Total Downloaded and Cropped: " + str(len(croppedImages)))
+	else:
+		print ("Only downloaded and cropped " + str(len(croppedImages)) + "/" + str(limit))
 	return croppedImages
 
 def cropDirectory(keyword, width, height, inDir):
