@@ -9,15 +9,14 @@ class TargetImage:
 		self.filepath = filepath
 		#sys.stdout.write(self.filepath)
 		self.image = cv.imread(filepath, cv.IMREAD_COLOR)
-		if self.image == None:
+		if self.image is None:
 			print ("Couldn't open TargetImage at " + filepath)
-			return None
 		self.x = x
 		self.y = y
 		self.grid = TargetImage.gridify(self)
 
 	def gridify(self):
-		if self.image == None:
+		if self.image is None:
 			return None
 		#filename = filepath.split("/")[1]
 		#sys.stdout.write("filename: " + filename)
