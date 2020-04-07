@@ -31,5 +31,9 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
 				try:
 					inputImages.remove(imBest)
 				except:
-					print('Failed to remove ' + imBest.filepath)
+					print('Failed to remove '),
+					try:
+						print(imBest.filepath)
+					except:
+						pass
 	return outputImages
