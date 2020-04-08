@@ -17,7 +17,7 @@ def BuildImage(x, y, inputImages):
 	numIms = len(inputImages)
 	if (x * y) > numIms:
 		print('Error: not enough images, needed ' + str(x*y) + " but got " + str(numIms))
-		return
+		return None
 
 	#concatenate the images
 	outputImage = None
