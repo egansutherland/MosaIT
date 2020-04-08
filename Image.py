@@ -1,5 +1,5 @@
 import cv2 as cv
-import numpy
+import numpy as np
 import math
 
 class Image: # If split is needed, uncomment cv.split line
@@ -22,7 +22,16 @@ class Image: # If split is needed, uncomment cv.split line
 		gSim = cv.compareHist( self.g_hist, other.g_hist, method=cmpMethod)
 		bSim = cv.compareHist( self.b_hist, other.b_hist, method=cmpMethod)
 
-		sim = (rSim + gSim + bSim)/3
+		colorSim = (rSim + gSim + bSim)/3
+
+		# comparison using diffs
+		diff = np.subtract(self.image, other.image)
+		diff = diff.astype('float64')
+		diff += abs(np.min(diff))
+		diff /= np.ptp(diff)
+		diffMean = np.mean(diff)
+
+		sim = ((0.95 * diffMean) + (0.05 * colorSim))
 
 		return sim
 
