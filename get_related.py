@@ -20,9 +20,11 @@ def getTerms(driver):
 	elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
 
 	if not elements:
-		bypass_safe(driver)
-		print('wait')
-		elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
+		elements = driver.find_elements(By.CLASS_NAME, 'tit')
+		if not elements:
+			bypass_safe(driver)
+			print('wait')
+			elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
 
 	relatedTerms = []
 

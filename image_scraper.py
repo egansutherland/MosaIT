@@ -31,6 +31,9 @@ def search(keyword, limit=100, threads=1):
 	terms = []
 	terms.append(keyword)
 	terms += gr.getTerms(driver)
+	if len(terms) < 2:
+		print('not enough terms')
+		return gr.getSrc(terms[0])
 	print('numTerms: ' + str(len(terms)))
 
 	#so we don't spawn more threads than terms
