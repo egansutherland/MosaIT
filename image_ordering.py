@@ -12,7 +12,7 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
 	outputImages = []
 	for gridIm in target.grid:
 		if len(outputImages)%100 == 0 and len(outputImages) != 0:
-			print("Selected " + len(outputImages) + " out of " + len(target.grid))
+			print("Selected " + str(len(outputImages)) + " out of " + str(len(target.grid)))
 		colorSimBest = 0
 		imBest = None
 		for downloadIm in inputImages:
