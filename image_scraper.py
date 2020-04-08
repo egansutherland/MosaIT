@@ -33,11 +33,15 @@ def search(keyword, limit=100, threads=1):
 	terms += gr.getTerms(driver)
 	print('numTerms: ' + str(len(terms)))
 
+	#so we don't spawn more threads than terms
+	if len(terms) < threads:
+		threads = len(terms)
+
 
 	sources = []
 	numSources = 0
 
-	tempIndex =  -1
+	#tempIndex =  -1
 
 	#parallel version
 	testList = pymp.shared.list()
