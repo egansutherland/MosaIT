@@ -70,10 +70,10 @@ def search(keyword, limit=100, threads=1):
 		for term in p.range(0, numTerms):
 			if len(testList) >= linkLimit:
 				break
-			tempSources = gr.getSrc(terms[index])
+			tempSources = gr.getSrc(terms[term])
 			with p.lock:
 				testList.extend(tempSources)
-				print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(len(testList)))
+				print('term: ' + str(term) + '\t' +terms[term] + '\tnumSources: ' + str(len(testList)))
 
 	print('numSources with dupes: ' + str(len(testList)))
 	sources = list(OrderedDict.fromkeys(testList))
