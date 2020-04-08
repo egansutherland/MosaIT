@@ -36,6 +36,7 @@ parser.add_argument("-o","--outputPath", help = "path to output Mosaic", default
 parser.add_argument("-n","--outputName", help = "name of output file", default = None)
 parser.add_argument("-a", "--databaseDirectory", help = "path to directory of images if -s is used", default = "/root/MosaIT/Downloads/") #"/root/MosaIT"
 parser.add_argument("-t", "--threads", help = "number of threads to use for source searching and image downloading", type=int, default=1)
+parser.add_argument("-x", "--blend", help = "saves another image consisting of the mosaic superimposed on the target image, blend value between 0 ->just mosaic and 1->just target image", type=float, default=None)
 
 #start timer
 startTotalTime = time.perf_counter()
@@ -62,6 +63,7 @@ outputPath = args.outputPath #output file path
 outputName = args.outputName #output file name
 databaseDirectory = args.databaseDirectory #the directory of images to use if using skip
 threads = args.threads
+blend = args.blend
 
 #open targetImage and find height and width
 if not "/" in targetImageFile:
@@ -82,7 +84,7 @@ print("Dimensions of grid image (w,h): ", width, height)
 croppedImages =[]
 if not skip:
 	downloadsDirectory = tempfile.mkdtemp()
-	print(str(downloadsDirectory))
+	print("Download directory: ", str(downloadsDirectory))
 	startSearchTime = time.perf_counter()
 	sources = image_scraper.search(keyword, limit, threads)
 	endSearchTime = time.perf_counter()
@@ -98,9 +100,12 @@ else:
 startMosaicTime = time.perf_counter()
 orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat)
 
+#build mosaic out of ordered images
+mosaicIm = image_builder.BuildImage(x, y, orderedImages)
+
 #make the filename for the completed mosaic (if not given)
 if outputName == None:
-	outputName = targetImageFileName + str(x) + "_" + str(y)
+	outputName = targetImageFileName + "_" + keyword + "_" + str(x) + "_" + str(y)
 	if best:
 		outputName += "_b"
 	else:
@@ -109,14 +114,27 @@ if outputName == None:
 		outputName += "_r"
 	outputName += ".png"
 
-#build mosaic out of ordered images
-image_builder.BuildImage(x, y, orderedImages, outputDirectory=outputPath, outputName=outputName)
+#check and make if necessary the outputDirectory
+if not os.path.exists(outputPath):
+	os.makedirs(outputPath)
+
+#save the mosaic
+mosaicName = outputPath + outputName
+cv.imwrite(mosaicName, mosaicIm)
+print("Success,", mosaicName, "created!")
+
 endMosaicTime = time.perf_counter()
 print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime)+"\n")
 
 #print total timer
 endTotalTime = time.perf_counter()
 print("Total Time: " + str(endTotalTime - startTotalTime))
+
+if blend is not None:
+	blendIm = cv.addWeighted(targetImage.image, blend, mosaicIm, 1-blend, 0.0)
+	blendImName = outputPath + "blend_" + str(blend) + "_" + outputName
+	cv.imwrite(blendImName, blendIm)
+	print("Saved " + blendImName)
 
 if view:
 	im = IMAGE.open(outputPath+"/"+outputName)
