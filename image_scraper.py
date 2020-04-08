@@ -57,11 +57,13 @@ def search(keyword, limit=100, threads=1):
 					with p.lock:
 						counter.value += 1
 						calcIndex = counter.value
-					tempSources = gr.getSrc(terms[calcIndex])
-					with p.lock:
-						testList.extend(tempSources)
-						numSources = len(testList)
-						print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(numSources))
+					#make sure calcIndex is in range	
+					if calcIndex <= len(terms) - 1:
+						tempSources = gr.getSrc(terms[calcIndex])
+						with p.lock:
+							testList.extend(tempSources)
+							numSources = len(testList)
+							print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(numSources))
 
 	print('numSources with dupes: ' + str(len(testList)))
 	sources = list(OrderedDict.fromkeys(testList))
