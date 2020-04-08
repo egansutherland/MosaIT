@@ -47,23 +47,33 @@ def search(keyword, limit=100, threads=1):
 	testList = pymp.shared.list()
 	counter = multiprocessing.Value("i", -1)
 
-	while len(testList) <= linkLimit:
-		#tempIndex += 1
-		#counter.append(tempIndex)
-		with pymp.Parallel(threads) as p:
-			for index in p.xrange(0,threads):
-				if numSources < linkLimit:
-					calcIndex = 0
-					with p.lock:
-						counter.value += 1
-						calcIndex = counter.value
-					#make sure calcIndex is in range	
-					if calcIndex <= len(terms) - 1:
-						tempSources = gr.getSrc(terms[calcIndex])
-						with p.lock:
-							testList.extend(tempSources)
-							numSources = len(testList)
-							print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(numSources))
+	# while len(testList) <= linkLimit:
+	# 	#tempIndex += 1
+	# 	#counter.append(tempIndex)
+	# 	with pymp.Parallel(threads) as p:
+	# 		for index in p.range(0,threads):
+	# 			if numSources < linkLimit:
+	# 				calcIndex = 0
+	# 				with p.lock:
+	# 					counter.value += 1
+	# 					calcIndex = counter.value
+	# 				#make sure calcIndex is in range	
+	# 				if calcIndex <= len(terms) - 1:
+	# 					tempSources = gr.getSrc(terms[calcIndex])
+	# 					with p.lock:
+	# 						testList.extend(tempSources)
+	# 						numSources = len(testList)
+	# 						print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(numSources))
+
+	numTerms = len(terms)
+	with pymp.Parallel(threads) as p:
+		for term in p.range(0, numTerms):
+			if len(testList) >= linkLimit:
+				break
+			tempSources = gr.getSrc(terms[index])
+			with p.lock:
+				testList.extend(tempSources)
+				print('term: ' + str(calcIndex) + '\t' +terms[calcIndex] + '\tnumSources: ' + str(len(testList)))
 
 	print('numSources with dupes: ' + str(len(testList)))
 	sources = list(OrderedDict.fromkeys(testList))
