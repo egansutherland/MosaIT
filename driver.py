@@ -84,7 +84,7 @@ print("Dimensions of grid image (w,h): ", width, height)
 croppedImages =[]
 if not skip:
 	downloadsDirectory = tempfile.mkdtemp()
-	print("Download directory: ", str(downloadsDirectory))
+	print("DownloadDir: ", str(downloadsDirectory))
 	startSearchTime = time.perf_counter()
 	sources = image_scraper.search(keyword, limit, threads)
 	endSearchTime = time.perf_counter()
@@ -102,6 +102,8 @@ orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, 
 
 #build mosaic out of ordered images
 mosaicIm = image_builder.BuildImage(x, y, orderedImages)
+if mosaicIm is None:
+	exit()
 
 #make the filename for the completed mosaic (if not given)
 if outputName == None:
@@ -114,7 +116,7 @@ if outputName == None:
 		outputName += "_r"
 	outputName += ".png"
 
-#check and make if necessary the outputDirectory
+#check and make if necessary the outputPath directory
 if not os.path.exists(outputPath):
 	os.makedirs(outputPath)
 
@@ -123,6 +125,13 @@ mosaicName = outputPath + outputName
 cv.imwrite(mosaicName, mosaicIm)
 print("Success,", mosaicName, "created!")
 
+#if blend option used, save the mosaic and target image blended together in outputPath directory
+if blend is not None:
+	blendIm = cv.addWeighted(targetImage.image, blend, mosaicIm, 1-blend, 0.0)
+	blendImName = outputPath + "blend_" + str(blend) + "_" + outputName
+	cv.imwrite(blendImName, blendIm)
+	print("Saved " + blendImName)
+
 endMosaicTime = time.perf_counter()
 print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime)+"\n")
 
@@ -130,12 +139,6 @@ print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime)+"\n")
 endTotalTime = time.perf_counter()
 print("Total Time: " + str(endTotalTime - startTotalTime))
 
-if blend is not None:
-	blendIm = cv.addWeighted(targetImage.image, blend, mosaicIm, 1-blend, 0.0)
-	blendImName = outputPath + "blend_" + str(blend) + "_" + outputName
-	cv.imwrite(blendImName, blendIm)
-	print("Saved " + blendImName)
-
 if view:
-	im = IMAGE.open(outputPath+"/"+outputName)
+	im = IMAGE.open(outputPath+outputName)
 	im.show()
