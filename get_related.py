@@ -31,8 +31,10 @@ def getTerms(driver):
 	clean = re.compile('<.*?>')
 
 	for i in range(0, len(elements)):
-		relatedTerms.append(elements[i].get_attribute("innerHTML"))
-		relatedTerms[i]=re.sub('  ', ' ', re.sub(clean, ' ', relatedTerms[i]).strip())
+		temp = elements[i].get_attribute("innerHTML")
+		if (not 'GIF' in temp) and (not 'gif' in temp):
+			relatedTerms.append(temp)
+			relatedTerms[i]=re.sub('  ', ' ', re.sub(clean, ' ', relatedTerms[i]).strip())
 
 	# for i in range(0, len(relatedTerms)):
 	# 	relatedTerms[i]=re.sub('  ', ' ', re.sub(clean, ' ', relatedTerms[i]).strip())

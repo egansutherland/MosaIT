@@ -17,22 +17,24 @@ class Image: # If split is needed, uncomment cv.split line
 	# similarity rating
 	# self and other must be of type Image
 	def colorSimilarity(self, other):
-		# cmpMethod = 0
-		# rSim = cv.compareHist( self.r_hist, other.r_hist, method=cmpMethod)
-		# gSim = cv.compareHist( self.g_hist, other.g_hist, method=cmpMethod)
-		# bSim = cv.compareHist( self.b_hist, other.b_hist, method=cmpMethod)
+		cmpMethod = 0
+		rSim = cv.compareHist( self.r_hist, other.r_hist, method=cmpMethod)
+		gSim = cv.compareHist( self.g_hist, other.g_hist, method=cmpMethod)
+		bSim = cv.compareHist( self.b_hist, other.b_hist, method=cmpMethod)
 
-		# colorSim = (rSim + gSim + bSim)/3
+		colorSim = (rSim + gSim + bSim)/3
 
 		# comparison using diffs
 		diff = np.subtract(self.image, other.image)
+		#diff = np.absolute(diff) * -1
 		diff = diff.astype('float64')
 		diff += abs(np.min(diff))
-		#diff /= np.ptp(diff)
+		diff /= np.ptp(diff)
 		diffMean = np.mean(diff)
+		#print(diffMean)
 
-		# sim = ((0.95 * diffMean) + (0.05 * colorSim))
-		sim = diffMean
+		sim = ((0.95 * diffMean) + (0.05 * colorSim))
+		#sim = diffMean
 
 		return sim
 
