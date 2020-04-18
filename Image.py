@@ -10,9 +10,10 @@ class Image:
 		else:
 			self.image = image
 		self.source = source # source on web of image
-		self.r_hist = cv.calcHist(self.image, [2], None, [256], (0,256)) # histogram of red channel
-		self.g_hist = cv.calcHist(self.image, [1], None, [256], (0,256)) # histogram of green channel
-		self.b_hist = cv.calcHist(self.image, [0], None, [256], (0,256)) # histogram of blue channel
+		self.split = cv.split(self.image)
+		self.r_hist = cv.calcHist(self.split, [2], None, [256], (0,256)) # histogram of red channel
+		self.g_hist = cv.calcHist(self.split, [1], None, [256], (0,256)) # histogram of green channel
+		self.b_hist = cv.calcHist(self.split, [0], None, [256], (0,256)) # histogram of blue channel
 
 	# Compares other histograms to self histograms
 	# and returns a value between 0 and 1 representing a
