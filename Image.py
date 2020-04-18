@@ -2,15 +2,17 @@ import cv2 as cv
 import numpy
 import math
 
-class Image: # If split is needed, uncomment cv.split line
-	def __init__(self, filepath, source):
+class Image:
+	def __init__(self, filepath, source, image=None):
 		self.filepath = filepath # filepath to image
-		self.image = cv.imread(filepath, cv.IMREAD_COLOR) # opened image
+		if image is None:
+			self.image = cv.imread(filepath, cv.IMREAD_COLOR) # opened image
+		else:
+			self.image = image
 		self.source = source # source on web of image
-		self.split = cv.split(self.image)
 		self.r_hist = cv.calcHist(self.image, [2], None, [256], (0,256)) # histogram of red channel
 		self.g_hist = cv.calcHist(self.image, [1], None, [256], (0,256)) # histogram of green channel
-		self.b_hist = cv.calcHist(self.split, [0], None, [256], (0,256)) # histogram of blue channel
+		self.b_hist = cv.calcHist(self.image, [0], None, [256], (0,256)) # histogram of blue channel
 
 	# Compares other histograms to self histograms
 	# and returns a value between 0 and 1 representing a
@@ -30,7 +32,6 @@ class Image: # If split is needed, uncomment cv.split line
 		#get actual height and width of image
 		realHeight = self.image.shape[0]
 		realWidth = self.image.shape[1]
-		#print("realHeight: ",realHeight,"realWidth",realWidth)
 		if realWidth == width and realHeight == height:
 			return
 		#scale down image
@@ -49,4 +50,3 @@ class Image: # If split is needed, uncomment cv.split line
 		top = math.floor((realHeight - height)/2)
 		bottom = math.floor(height + (realHeight - height)/2)
 		self.image=im[top:bottom,left:right]
-		#print("size after resize",self.image.shape)
