@@ -16,7 +16,7 @@ global numSources
 #global parallelIndex
 
 def search(keyword, limit=100, threads=1):
-	linkLimit = math.floor(limit*1.5)
+	linkLimit = math.floor(limit*1.25)
 
 	baseurl = "http://www.bing.com/images/search?q=" + keyword
 	options = Options()
