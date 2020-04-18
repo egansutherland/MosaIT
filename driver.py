@@ -111,7 +111,7 @@ else:
 #order images accordingly
 startMosaicTime = time.perf_counter()
 numIterations = len(croppedImages)*x*y #for use with timers
-orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat)
+orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat, threads)
 
 #build mosaic out of ordered images
 mosaicIm = image_builder.BuildImage(x, y, orderedImages)
