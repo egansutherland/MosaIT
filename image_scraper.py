@@ -86,7 +86,9 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 			except:
 				continue
 			contentType = r.headers.get('content-type')
-			if 'image' in contentType:
+			if contentType == None:
+				pass
+			elif 'image' in contentType:
 				tempType = contentType.split('/')[-1]
 				filename = downloadDir + '/' + str(source) + '.' + tempType
 				open(filename, 'w+b').write(r.content) #saves the file here
@@ -97,6 +99,8 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 					downloadCount.value += 1
 					if im.image.shape[0] == height and im.image.shape[1] == width:
 						testList.append(im)
+			else:
+				pass
 
 	croppedImages = list(testList)
 	if len(croppedImages) >= limit:

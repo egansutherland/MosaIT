@@ -141,22 +141,25 @@ def changeDomColor(driver, ind):
 	colorFilter = None
 	#print(ind)
 	try:
-		#print('not excepted')
+		print('not excepted')
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span').click()
 	except NoSuchElementException:
-		#open filters
-		#print('excepted')
+		# open filters
+		print('excepted')
 		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]').click()
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 	except ElementNotInteractableException:
-		#print('super excepted')
+		print('super excepted')
 		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]/img[1]').click() 
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 	except ElementClickInterceptedException:
-		#print('super duper excepted')
+		print('super duper excepted')
 		driver.find_element(By.XPATH, '//*[@id="fltIdtLnk"]').click()
 		colorFilter = driver.find_element(By.XPATH, '//*[@id="ftrB"]/ul/li[2]/span/span')
 	except StaleElementReferenceException:
+		pass
+	except:
+		print("well what do you know?")
 		pass
 
 	color = None
