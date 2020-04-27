@@ -13,32 +13,28 @@ from collections import OrderedDict
 import re
 import xml.etree.ElementTree as ET
 import time
-#from selenium.webdriver.common.exceptions import NoSuchElementException
 
-# get search terms related to provided keyword
+# get search terms related to provided keyword by using selenium driver and Bing Images suggestions, returns a list of strings that are related terms
 def getTerms(driver):
 	elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
 
 	if not elements:
 		bypass_safe(driver)
-		print('wait')
+		print('Bypassing safe search')
 		elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
 
 	relatedTerms = []
-
 	clean = re.compile('<.*?>')
 
 	for i in range(0, len(elements)):
 		relatedTerms.append(elements[i].get_attribute("innerHTML"))
 		relatedTerms[i]=re.sub('  ', ' ', re.sub(clean, ' ', relatedTerms[i]).strip())
 
-	# for i in range(0, len(relatedTerms)):
-	# 	relatedTerms[i]=re.sub('  ', ' ', re.sub(clean, ' ', relatedTerms[i]).strip())
-
 	driver.close()
 	
 	return relatedTerms
 
+#sets filter off on Bing Images
 def bypass_safe(driver):
 	driver.find_element_by_css_selector('#sb_form_go').click()
 
@@ -55,20 +51,16 @@ def bypass_safe(driver):
 		driver.find_element_by_xpath('//*[@id="ftr_ss_d"]/div/a[2]').click()
 
 
-# get list of image sources
+# get list of image sources related to keyword from Bing
 def getSrc(keyword):
 
-	# sources = []
-	# if numSources > limit:
-	# 	return sources
-
+	#set up selenium driver
 	baseurl = "http://www.bing.com/images/search?q=" + str(keyword)
 	options = Options()
 	options.headless = True
 	options.add_argument('--no-sandbox')
 	options.add_argument('--disable-dev-shm-usage')
 	driver = webdriver.Chrome(chrome_options=options)
-
 	driver.get(baseurl)
 
 	sources = []
@@ -111,6 +103,7 @@ def getSrc(keyword):
 
 	return sources
 
+#function to scroll to bottom of webpage
 def scrollToBottom(driver):
 	last_height = driver.execute_script("return document.body.scrollHeight")
 
@@ -135,6 +128,7 @@ def scrollToBottom(driver):
 			break
 		last_height = new_height
 
+#change dominant color filters on Bing Images
 def changeDomColor(driver, ind):
 	colors = ['//*[@id="ftrB"]/ul/li[2]/div/div/div/div[1]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[2]/a/div', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[3]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[4]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[5]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[6]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[7]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[8]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[9]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[10]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[11]', '//*[@id="ftrB"]/ul/li[2]/div/div/div/div[12]']
 	time.sleep(0.5)

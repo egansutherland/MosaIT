@@ -12,9 +12,10 @@ import math
 import tempfile
 import cv2 as cv
 import time
-#only used for displaying image with -v option
+
 from PIL import Image as IMAGE
 
+#get command line arguments
 parser = argparse.ArgumentParser(description='Calls MosaIT backend driver with parameters.')
 
 #required arguments
@@ -88,36 +89,21 @@ if not skip:
 	startSearchTime = time.perf_counter()
 	sources = image_scraper.search(keyword, limit, threads)
 	endSearchTime = time.perf_counter()
-	print("Search time: " + str(endSearchTime - startSearchTime))
-	#check for error state
-	if sources is None or len(sources) == 0:
-		print("Error, no sources obtained\n")
-		exit()
-	else:
-		print("Search time per source: " + str((endSearchTime - startSearchTime)/len(sources)) + "\n")
+	print("Search time: " + str(endSearchTime - startSearchTime) + "\n")
 	startDownloadTime = time.perf_counter()
 	croppedImages = image_scraper.download(downloadsDirectory, sources, width, height, limit, threads)
 	endDownloadTime = time.perf_counter()
-	print("Download time: " + str(endDownloadTime - startDownloadTime))
-	#check for error state
-	if croppedImages is None or len(croppedImages) == 0:
-		print("Error, no downloaded and cropped images obtained\n")
-		exit()
-	else:
-		print("Download time per image: " + str((endDownloadTime - startDownloadTime)/len(croppedImages)) + "\n")
+	print("Download time: " + str(endDownloadTime - startDownloadTime) + "\n")
 else:
 	croppedImages = image_scraper.cropDirectory(keyword, width, height, databaseDirectory)
 
 #order images accordingly
 startMosaicTime = time.perf_counter()
-numIterations = len(croppedImages)*x*y #for use with timers
-orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat, threads)
+orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat)
 
 #build mosaic out of ordered images
 mosaicIm = image_builder.BuildImage(x, y, orderedImages)
-#check for error state
 if mosaicIm is None:
-	print("Error, unable to make mosaic")
 	exit()
 
 #make the filename for the completed mosaic (if not given)
@@ -137,25 +123,23 @@ if not os.path.exists(outputPath):
 
 #save the mosaic
 mosaicName = outputPath + outputName
-cv.imwrite(mosaicName, mosaicIm)
+if blend is None:
+	cv.imwrite(mosaicName, mosaicIm)
+	#if blend option used, save the mosaic and target image blended together in outputPath directory
+else:
+	print("Blending with target image")
+	blendIm = cv.addWeighted(targetImage.image, blend, mosaicIm, 1-blend, 0.0)
+	cv.imwrite(mosaicName, blendIm)
 print("Success,", mosaicName, "created!")
 
-#if blend option used, save the mosaic and target image blended together in outputPath directory
-if blend is not None:
-	blendIm = cv.addWeighted(targetImage.image, blend, mosaicIm, 1-blend, 0.0)
-	blendImName = outputPath + "blend_" + str(blend) + "_" + outputName
-	cv.imwrite(blendImName, blendIm)
-	print("Saved " + blendImName)
-
 endMosaicTime = time.perf_counter()
-print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime))
-print("Build time per grid image: " + str((endMosaicTime - startMosaicTime)/(x*y)))
-print("Build time per iteration: " + str((endMosaicTime - startMosaicTime)/numIterations) + "\n")
+print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime)+"\n")
 
 #print total timer
 endTotalTime = time.perf_counter()
 print("Total Time: " + str(endTotalTime - startTotalTime))
 
+#if view option, display the mosaic
 if view:
 	im = IMAGE.open(outputPath+outputName)
 	im.show()

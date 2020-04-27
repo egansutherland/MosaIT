@@ -4,22 +4,21 @@ import Image
 import TargetImage
 import pymp
 
-# analyses target image and input images. Orders
-# input images by changing names based on where
-# it matches target image best.
-# target is of type TargetImage
-# inputImages is an array of type Image
+#takes in a target image, a list of downloaded images, and a color similarity threshold colorSimIn, and booleans best and repeat. It returns an ordered list of images from inputImages to use in mosaic.
 def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False, threads=1):
+	#check if can use threaded version
 	if best and repeat and threads > 1:
 		return threadedOrderImages(target, inputImages, threads)
 	else:
 		print("Using non-threaded ordering")
 	outputImages = []
+	#iterate through grid images
 	for gridIm in target.grid:
 		if len(outputImages)%100 == 0 and len(outputImages) != 0:
 			print("Selected " + str(len(outputImages)) + " out of " + str(len(target.grid)))
 		colorSimBest = 0
 		imBest = None
+		#iterate through downloaded images, selecting either best image for grid image or first above threshold colorSim. Delete image from list if repeat is not enabled.
 		for downloadIm in inputImages:
 			colorSim = gridIm.colorSimilarity(downloadIm)
 			if not best:
@@ -45,9 +44,11 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False, threa
 						pass
 	return outputImages
 
+#the threaded version of the above function, if best and repeat are enabled. Spawns as many threads as passed in.
 def threadedOrderImages(target, inputImages, threads):
 	print("Using threaded ordering")
 	numGridImages = len(target.grid)
+	#parallel variable
 	outputImages = pymp.shared.list([None]*numGridImages)
 	with pymp.Parallel(threads) as p:
 		for gridIdx in p.range(0, numGridImages):

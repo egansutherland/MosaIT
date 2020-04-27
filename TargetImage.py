@@ -4,6 +4,7 @@ import sys
 import tempfile
 import os
 
+#TargetImage class which has a filepath, list of grid images grid, number of images to use from left to right x, number of images to use from top to bottom y
 class TargetImage:
 	def __init__(self, filepath, x, y):
 		self.filepath = filepath
@@ -14,6 +15,7 @@ class TargetImage:
 		self.y = y
 		self.grid = TargetImage.gridify(self)
 
+	#break up target image into smaller grid images and returns list of grid images
 	def gridify(self):
 		if self.image is None:
 			return None
