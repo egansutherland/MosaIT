@@ -6,12 +6,18 @@ import pymp
 
 #takes in a target image, a list of downloaded images, and a color similarity threshold colorSimIn, and booleans best and repeat. It returns an ordered list of images from inputImages to use in mosaic.
 def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False, threads=1):
+	outputImages = []
+	#check if not enough inputImages
+	if len(inputImages) < len(target.grid):
+		return outputImages
 	#check if can use threaded version
 	if best and repeat and threads > 1:
-		return threadedOrderImages(target, inputImages, threads)
+		try:
+			return threadedOrderImages(target, inputImages, threads)
+		except:
+			print("Problem using threaded ordering")
 	else:
 		print("Using non-threaded ordering")
-	outputImages = []
 	#iterate through grid images
 	for gridIm in target.grid:
 		if len(outputImages)%100 == 0 and len(outputImages) != 0:
