@@ -107,7 +107,7 @@ if not skip:
 	else:
 		print("Download time per image: " + str((endDownloadTime - startDownloadTime)/len(croppedImages)) + "\n")
 else:
-	croppedImages = image_scraper.cropDirectory(keyword, width, height, databaseDirectory, threads)
+	croppedImages = image_scraper.cropDirectory(keyword, width, height, databaseDirectory)
 
 #order images accordingly
 startMosaicTime = time.perf_counter()
