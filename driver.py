@@ -113,7 +113,10 @@ else:
 startMosaicTime = time.perf_counter()
 numIterations = len(croppedImages)*x*y #for use with timers
 orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat, threads)
-
+#check for error state
+if len(orderedImages) != len(target.grid):
+	print("Error, not enough images selected for mosaic")
+	exit()
 #build mosaic out of ordered images
 mosaicIm = image_builder.BuildImage(x, y, orderedImages)
 #check for error state
