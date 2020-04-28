@@ -155,6 +155,6 @@ def cropDirectory(keyword, width, height, inDir, threads=1):
 				croppedList.append(im)
 				successCount.value+=1
 
-	print("Opened and cropped " + str(successCount) + " out of " + str(fileCount) + " from " + inDir)
+	print("Opened and cropped " + str(successCount.value) + " out of " + str(fileCount.value) + " from " + inDir)
 	croppedImages = list(croppedList)
 	return croppedImages
