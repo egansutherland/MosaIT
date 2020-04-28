@@ -127,27 +127,34 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 	return croppedImages
 
 #takes in a directory inDir, tries to open all files as images and crop to width and height, then returns a list of cropped images
-def cropDirectory(keyword, width, height, inDir):
+def cropDirectory(keyword, width, height, inDir, threads=1):
 	croppedImages = []
 	successes = 0
 	total = 0
+	croppedList = pymp.shared.list()
+	fileCount = multiprocessing.Value("i",0)
+	successCount = multiprocessing.Value("i",0)
 	#iterate through files trying to open as image and crop to right size
-	for file in os.listdir(inDir):
-		total += 1
-		try:
-			im = Image.Image(inDir + file, None)
-		except:
-			continue
+	with pymp.Parallel(threads) as p:
+		for file in os.listdir(inDir):
+			with p.lock:
+				fileCount+=1
+			try:
+				im = Image.Image(inDir + file, None)
+			except:
+				continue
 
-		#skip images that are too small
-		realHeight = im.image.shape[0]
-		realWidth = im.image.shape[1]
-		if(realWidth < width or realHeight < height):
-			continue
-		#crop to right size and add to list
-		im.crop(width, height)
-		croppedImages.append(im)
-		successes+=1
+			#skip images that are too small
+			realHeight = im.image.shape[0]
+			realWidth = im.image.shape[1]
+			if(realWidth < width or realHeight < height):
+				continue
+			#crop to right size and add to list
+			im.crop(width, height)
+			with p.lock:
+				croppedList.append(im)
+				successCount+=1
 
-	print("Opened and cropped " + str(successes) + " out of " + str(total) + " from " + inDir)
+	print("Opened and cropped " + str(successCount) + " out of " + str(fileCount) + " from " + inDir)
+	croppedImages = list(croppedList)
 	return croppedImages
