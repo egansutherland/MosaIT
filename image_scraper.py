@@ -138,7 +138,7 @@ def cropDirectory(keyword, width, height, inDir, threads=1):
 	with pymp.Parallel(threads) as p:
 		for file in os.listdir(inDir):
 			with p.lock:
-				fileCount+=1
+				fileCount.value+=1
 			try:
 				im = Image.Image(inDir + file, None)
 			except:
@@ -153,7 +153,7 @@ def cropDirectory(keyword, width, height, inDir, threads=1):
 			im.crop(width, height)
 			with p.lock:
 				croppedList.append(im)
-				successCount+=1
+				successCount.value+=1
 
 	print("Opened and cropped " + str(successCount) + " out of " + str(fileCount) + " from " + inDir)
 	croppedImages = list(croppedList)
