@@ -168,7 +168,8 @@ def threadedCropDirectory(keyword, width, height, inDir, threads):
 	successCount = multiprocessing.Value("i",0)
 	#iterate through files trying to open as image and crop to right size
 	with pymp.Parallel(threads) as p:
-		for file in p.range(os.listdir(inDir)):
+		for file_idx in p.range(len(os.listdir(inDir))):
+			file = os.listdir(inDir)[file_idx]
 			with p.lock:
 				fileCount.value+=1
 			try:
