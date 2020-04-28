@@ -128,6 +128,38 @@ def download(downloadDir, sources, width, height, limit=100, threads=1):
 
 #takes in a directory inDir, tries to open all files as images and crop to width and height, then returns a list of cropped images
 def cropDirectory(keyword, width, height, inDir, threads=1):
+	if threads > 1:
+		try:
+			return threadedCropDirectory(keyword, width, height, inDir, threads)
+		except:
+			print("Problem with threaded crop directory")
+	croppedImages = []
+	successes = 0
+	total = 0
+	#iterate through files trying to open as image and crop to right size
+	for file in os.listdir(inDir):
+		total += 1
+		try:
+			im = Image.Image(inDir + file, None)
+		except:
+			continue
+
+		#skip images that are too small
+		realHeight = im.image.shape[0]
+		realWidth = im.image.shape[1]
+		if(realWidth < width or realHeight < height):
+			continue
+		#crop to right size and add to list
+		im.crop(width, height)
+		croppedImages.append(im)
+		successes+=1
+
+	print("Opened and cropped " + str(successes) + " out of " + str(total) + " from " + inDir)
+	return croppedImages
+
+#same as above but threaded
+def threadedCropDirectory(keyword, width, height, inDir, threads):
+	print("Using threaded crop directory")
 	croppedImages = []
 	successes = 0
 	total = 0
@@ -136,7 +168,7 @@ def cropDirectory(keyword, width, height, inDir, threads=1):
 	successCount = multiprocessing.Value("i",0)
 	#iterate through files trying to open as image and crop to right size
 	with pymp.Parallel(threads) as p:
-		for file in os.listdir(inDir):
+		for file in p.range(os.listdir(inDir)):
 			with p.lock:
 				fileCount.value+=1
 			try:
