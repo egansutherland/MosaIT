@@ -12,7 +12,7 @@ import math
 import tempfile
 import cv2 as cv
 import time
-
+#only used for displaying image with -v option
 from PIL import Image as IMAGE
 
 #get command line arguments
@@ -82,28 +82,43 @@ width = targetImage.grid[0].image.shape[1]
 print("Dimensions of grid image (w,h): ", width, height)
 
 #obtain images and put in temp Downloads directory
-croppedImages =[]
+croppedImages = []
 if not skip:
 	downloadsDirectory = tempfile.mkdtemp()
 	print("DownloadDir: ", str(downloadsDirectory))
 	startSearchTime = time.perf_counter()
 	sources = image_scraper.search(keyword, limit, threads)
 	endSearchTime = time.perf_counter()
-	print("Search time: " + str(endSearchTime - startSearchTime) + "\n")
+	print("Search time: " + str(endSearchTime - startSearchTime))
+	#check for error state
+	if sources is None or len(sources) == 0:
+		print("Error, no sources obtained\n")
+		exit()
+	else:
+		print("Search time per source: " + str((endSearchTime - startSearchTime)/len(sources)) + "\n")
 	startDownloadTime = time.perf_counter()
 	croppedImages = image_scraper.download(downloadsDirectory, sources, width, height, limit, threads)
 	endDownloadTime = time.perf_counter()
-	print("Download time: " + str(endDownloadTime - startDownloadTime) + "\n")
+	print("Download time: " + str(endDownloadTime - startDownloadTime))
+	#check for error state
+	if croppedImages is None or len(croppedImages) == 0:
+		print("Error, no downloaded and cropped images obtained\n")
+		exit()
+	else:
+		print("Download time per image: " + str((endDownloadTime - startDownloadTime)/len(croppedImages)) + "\n")
 else:
 	croppedImages = image_scraper.cropDirectory(keyword, width, height, databaseDirectory)
 
 #order images accordingly
 startMosaicTime = time.perf_counter()
+numIterations = len(croppedImages)*x*y #for use with timers
 orderedImages = image_ordering.OrderImages(targetImage,croppedImages, colorSim, best, repeat, threads)
 
 #build mosaic out of ordered images
 mosaicIm = image_builder.BuildImage(x, y, orderedImages)
+#check for error state
 if mosaicIm is None:
+	print("Error, unable to make mosaic")
 	exit()
 
 #make the filename for the completed mosaic (if not given)
@@ -133,7 +148,12 @@ else:
 print("Success,", mosaicName, "created!")
 
 endMosaicTime = time.perf_counter()
-print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime)+"\n")
+print("Mosaic Build Time: " + str(endMosaicTime - startMosaicTime))
+try:
+	print("Build time per grid image: " + str((endMosaicTime - startMosaicTime)/(x*y)))
+	print("Build time per iteration: " + str((endMosaicTime - startMosaicTime)/numIterations) + "\n")
+except:
+	print("\n")
 
 #print total timer
 endTotalTime = time.perf_counter()
