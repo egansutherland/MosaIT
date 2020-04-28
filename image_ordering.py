@@ -12,10 +12,10 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False, threa
 		return outputImages
 	#check if can use threaded version
 	if best and repeat and threads > 1:
-		try:
-			return threadedOrderImages(target, inputImages, threads)
-		except:
-			print("Problem using threaded ordering")
+		#try:
+		return threadedOrderImages(target, inputImages, threads)
+		#except:
+			#print("Problem using threaded ordering")
 	else:
 		print("Using non-threaded ordering")
 	#iterate through grid images
@@ -55,13 +55,14 @@ def threadedOrderImages(target, inputImages, threads):
 	print("Using threaded ordering")
 	numGridImages = len(target.grid)
 	#parallel variable
+	sharedInputImages = pymp.shared.list(inputImages)
 	outputImages = pymp.shared.list([None]*numGridImages)
 	with pymp.Parallel(threads) as p:
 		for gridIdx in p.range(0, numGridImages):
 			gridIm = target.grid[gridIdx]
 			imBest = None
 			colorSimBest = 0
-			for downloadIm in inputImages:
+			for downloadIm in sharedInputImages:
 				colorSim = gridIm.colorSimilarity(downloadIm)
 				if colorSim > colorSimBest:
 					colorSimBest = colorSim
