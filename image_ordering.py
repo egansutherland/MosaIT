@@ -12,10 +12,10 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False, threa
 		return outputImages
 	#check if can use threaded version
 	if best and repeat and threads > 1:
-		#try:
-		return threadedOrderImages(target, inputImages, threads)
-		#except:
-			#print("Problem using threaded ordering")
+		try:
+			return threadedOrderImages(target, inputImages, threads)
+		except:
+			print("Problem using threaded ordering")
 	else:
 		print("Using non-threaded ordering")
 	#iterate through grid images
