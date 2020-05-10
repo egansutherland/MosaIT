@@ -32,7 +32,7 @@ def search(keyword, limit=100, threads=1):
 	#get related terms
 	terms = []
 	terms.append(keyword)
-	terms += gr.getTerms(driver)
+	terms += gr.getTerms(driver, keyword)
 	print('numTerms: ' + str(len(terms)))
 
 	#so we don't spawn more threads than terms

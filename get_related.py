@@ -15,13 +15,17 @@ import xml.etree.ElementTree as ET
 import time
 
 # get search terms related to provided keyword by using selenium driver and Bing Images suggestions, returns a list of strings that are related terms
-def getTerms(driver):
+def getTerms(driver, keyword):
 	elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
-
+	flag = False
+	if len(elements) <= 1:
+		elements = driver.find_elements(By.CLASS_NAME, 'tit')
+		flag = True
 	if not elements:
 		bypass_safe(driver)
 		print('Bypassing safe search')
 		elements = driver.find_elements(By.CLASS_NAME, 'suggestion-title')
+		flag = False
 
 	relatedTerms = []
 	clean = re.compile('<.*?>')
@@ -29,9 +33,11 @@ def getTerms(driver):
 	for i in range(0, len(elements)):
 		relatedTerms.append(elements[i].get_attribute("innerHTML"))
 		relatedTerms[i]=re.sub('  ', ' ', re.sub(clean, ' ', relatedTerms[i]).strip())
+		if flag:
+			relatedTerms[i] = relatedTerms[i] + ' ' + keyword
 
 	driver.close()
-	
+	print(relatedTerms)
 	return relatedTerms
 
 #sets filter off on Bing Images
