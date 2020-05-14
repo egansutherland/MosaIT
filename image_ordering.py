@@ -2,19 +2,29 @@ import numpy as np
 import cv2 as cv
 import Image
 import TargetImage
+import pymp
 
-# analyses target image and input images. Orders
-# input images by changing names based on where
-# it matches target image best.
-# target is of type TargetImage
-# inputImages is an array of type Image
-def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
+#takes in a target image, a list of downloaded images, and a color similarity threshold colorSimIn, and booleans best and repeat. It returns an ordered list of images from inputImages to use in mosaic.
+def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False, threads=1):
 	outputImages = []
+	#check if not enough inputImages
+	if len(inputImages) < len(target.grid):
+		return outputImages
+	#check if can use threaded version
+	if best and repeat and threads > 1:
+		try:
+			return threadedOrderImages(target, inputImages, threads)
+		except:
+			print("Problem using threaded ordering")
+	else:
+		print("Using non-threaded ordering")
+	#iterate through grid images
 	for gridIm in target.grid:
 		if len(outputImages)%100 == 0 and len(outputImages) != 0:
 			print("Selected " + str(len(outputImages)) + " out of " + str(len(target.grid)))
 		colorSimBest = 0
 		imBest = None
+		#iterate through downloaded images, selecting either best image for grid image or first above threshold colorSim. Delete image from list if repeat is not enabled.
 		for downloadIm in inputImages:
 			colorSim = gridIm.colorSimilarity(downloadIm)
 			if not best:
@@ -39,3 +49,23 @@ def OrderImages(target, inputImages, colorSimIn, best=False, repeat=False):
 					except:
 						pass
 	return outputImages
+
+#the threaded version of the above function, if best and repeat are enabled. Spawns as many threads as passed in.
+def threadedOrderImages(target, inputImages, threads):
+	print("Using threaded ordering")
+	numGridImages = len(target.grid)
+	#parallel variable
+	outputImages = pymp.shared.list([None]*numGridImages)
+	with pymp.Parallel(threads) as p:
+		for gridIdx in p.range(0, numGridImages):
+			gridIm = target.grid[gridIdx]
+			imBest = None
+			colorSimBest = 0
+			for downloadIm in inputImages:
+				colorSim = gridIm.colorSimilarity(downloadIm)
+				if colorSim > colorSimBest:
+					colorSimBest = colorSim
+					imBest = downloadIm
+			outputImages[gridIdx]=imBest
+	return outputImages
+

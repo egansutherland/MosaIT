@@ -11,7 +11,6 @@ import cv2 as cv
 # X: number of images per row
 # Y: number of images per column
 # inputImages: list of image class objects to stitch
-
 def BuildImage(x, y, inputImages):
 	#check if enough images
 	numIms = len(inputImages)
